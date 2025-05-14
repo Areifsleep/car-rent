@@ -1,6 +1,7 @@
 "use client";
 
 import type React from "react";
+import { usePage } from "@inertiajs/react";
 
 import { useState, useEffect } from "react";
 import { Link } from "@inertiajs/react";
@@ -12,6 +13,8 @@ import {
     User,
     ChevronRight,
     ArrowLeft,
+    Settings,
+    LogOut,
 } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import {
@@ -19,10 +22,13 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
 } from "@/Components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 export default function Navbar() {
+    const { auth } = usePage().props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
     const [isMobile, setIsMobile] = useState(false);
@@ -101,7 +107,7 @@ export default function Navbar() {
                     <Link href="/" className="flex items-center z-50">
                         <span className="text-2xl font-bold">
                             <span className="text-amber-500">REN</span>
-                            <span className="text-white">AX</span>
+                            <span className="text-white">7AL</span>
                         </span>
                     </Link>
 
@@ -274,38 +280,87 @@ export default function Navbar() {
                         <div className="h-6 w-px bg-zinc-600"></div>
 
                         {/* Login */}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="text-white hover:text-amber-500 hover:bg-transparent"
+                        {auth.user ? (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button className="flex items-center space-x-2 rounded-md p-1 text-sm font-medium text-zinc-300 hover:bg-zinc-700">
+                                        <div className="relative h-8 w-8 rounded-full bg-zinc-700">
+                                            <User className="absolute left-1/2 top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 text-zinc-300" />
+                                        </div>
+                                        <div className="hidden md:block text-left">
+                                            <div>{auth.user.name}</div>
+                                            {/* <div className="text-xs text-zinc-400">
+                                                {auth.user.roles.includes(
+                                                    "admin"
+                                                )
+                                                    ? "Administrator"
+                                                    : "Regular User"}
+                                            </div> */}
+                                        </div>
+                                        <ChevronDown className="h-4 w-4 text-zinc-400" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                    align="end"
+                                    className="w-56"
                                 >
-                                    <User className="h-5 w-5 mr-2" />
-                                    <span className="hidden sm:inline">
-                                        Login
-                                    </span>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56">
-                                <DropdownMenuItem asChild>
-                                    <Link
-                                        href={route("login")}
-                                        className="w-full cursor-pointer"
+                                    <DropdownMenuLabel>
+                                        My Account
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem>
+                                        <User className="mr-2 h-4 w-4" />
+                                        <span>Profile</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Settings className="mr-2 h-4 w-4" />
+                                        <span>Settings</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem>
+                                        <LogOut className="mr-2 h-4 w-4" />
+                                        <span>Log out</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        ) : (
+                            // Navbar Item for Guests or Unauthenticated Users
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-white hover:text-amber-500 hover:bg-transparent"
                                     >
-                                        Login
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <Link
-                                        href={route("register")}
-                                        className="w-full cursor-pointer"
-                                    >
-                                        Register
-                                    </Link>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                                        <User className="h-5 w-5 mr-2" />
+                                        <span className="hidden sm:inline">
+                                            Login
+                                        </span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                    align="end"
+                                    className="w-56"
+                                >
+                                    <DropdownMenuItem asChild>
+                                        <Link
+                                            href={route("login")}
+                                            className="w-full cursor-pointer"
+                                        >
+                                            Login
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link
+                                            href={route("register")}
+                                            className="w-full cursor-pointer"
+                                        >
+                                            Register
+                                        </Link>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )}
 
                         {/* Divider */}
                         <div className="h-6 w-px bg-zinc-600"></div>

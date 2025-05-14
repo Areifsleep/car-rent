@@ -46,7 +46,7 @@ export default function CTASection() {
                     <Link href="/rent">
                         <Button
                             variant="outline"
-                            className="border-white text-white hover:bg-white hover:text-zinc-900 px-8 py-6 text-lg rounded-full"
+                            className="bg-transparent border-white text-white hover:bg-white hover:text-zinc-900 px-8 py-6 text-lg rounded-full"
                         >
                             Rent Now <ArrowRight className="ml-2 h-5 w-5" />
                         </Button>

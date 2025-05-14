@@ -9,7 +9,7 @@ import ScrollToTop from "@/Components/ScrollToTop";
 import { Button } from "@/Components/ui/button";
 import { Link } from "@inertiajs/react";
 
-export default function Home() {
+export default function Welcome() {
     return (
         <div className="flex min-h-screen flex-col">
             <Navbar />

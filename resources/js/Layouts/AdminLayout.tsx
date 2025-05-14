@@ -104,7 +104,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     <Link href="/admin/dashboard" className="flex items-center">
                         <span className="text-2xl font-bold">
                             <span className="text-amber-500">REN</span>
-                            <span className="text-white">AX</span>
+                            <span className="text-white">7AL</span>
                         </span>
                         <span className="ml-2 text-xs font-medium text-zinc-400">
                             ADMIN
@@ -148,7 +148,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     <Link href="/">
                         <Button
                             variant="outline"
-                            className="w-full justify-start border-zinc-700 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                            className="bg-tranparent w-full justify-start border-zinc-700 text-zinc-400 hover:bg-zinc-800 hover:text-white"
                         >
                             <LogOut className="mr-2 h-4 w-4" />
                             Kembali ke Website

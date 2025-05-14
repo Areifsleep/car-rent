@@ -20,6 +20,10 @@ Route::get('/cars', function () {
     return Inertia::render('Cars/Index');
 });
 
+Route::get('/admin/dashboard', function () {
+    return Inertia::render('Admin/AdminDashboard');
+})->middleware(['auth', 'verified'])->name('admin.dashboard');
+
 
 Route::get('/cars', function () {
     return Inertia::render('Cars/Index');
