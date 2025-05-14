@@ -20,6 +20,11 @@ Route::get('/cars', function () {
     return Inertia::render('Cars/Index');
 });
 
+
+Route::get('/cars', function () {
+    return Inertia::render('Cars/Index');
+});
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
