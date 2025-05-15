@@ -2,12 +2,27 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// Route::middleware(['auth'])->prefix('admin')->group(function () {
-//     Route::get('/admin/dashboard', function () {
-//         return Inertia::render('Admin/AdminDashboard');
-//     })->name('admin.dashboard');
-// });
+Route::middleware(['auth', "role:admin"])->prefix('admin')->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('Admin/AdminDashboard');
+    })->name('admin.dashboard');
+    // Route::redirect("/admin", "/admin/dashboard");
+    Route::get('/users', function () {
+        return Inertia::render('Admin/Users');
+    })->name('admin.users');
 
-Route::middleware(["auth","role:admin"])->group(function () {
+    Route::get('/cars', function () {
+        return Inertia::render('Admin/Cars');
+    })->name('admin.cars');
+
+    Route::get('/bookings', function () {
+        return Inertia::render('Admin/Bookings');
+    })->name('admin.bookings');
+    Route::get('/payments', function () {
+        return Inertia::render('Admin/Bookings');
+    })->name('admin.payments');
+});
+
+Route::middleware(["auth","verified","role:admin"])->group(function () {
     Route::redirect("/admin", "/admin/dashboard");
 });

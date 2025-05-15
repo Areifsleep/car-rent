@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Controllers\CarController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Http\Middleware\OnlyGuestAllowedMiddleware;
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -17,9 +18,7 @@ Route::get('/', function () {
 
 
 
-Route::get('/cars', function () {
-    return Inertia::render('Cars/Index');
-});
+Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
 
 // Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 //     Route::get('/dashboard', function () {
