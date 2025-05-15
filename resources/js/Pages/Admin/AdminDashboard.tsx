@@ -18,7 +18,7 @@ import {
 } from "@/Components/ui/card";
 import AdminLayout from "@/Layouts/AdminLayout";
 
-export default function AdminDashboardPage() {
+export default function AdminDashboard() {
     return (
         <AdminLayout>
             <div>

@@ -309,17 +309,34 @@ export default function Navbar() {
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem>
-                                        <User className="mr-2 h-4 w-4" />
-                                        <span>Profile</span>
+                                        <Link
+                                            href={route("logout")}
+                                            className="w-full cursor-pointer flex items-center"
+                                        >
+                                            <User className="mr-2 h-4 w-4" />
+                                            <span>Profile</span>
+                                        </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem>
-                                        <Settings className="mr-2 h-4 w-4" />
-                                        <span>Settings</span>
+                                        <Link
+                                            href={route("logout")}
+                                            className="w-full cursor-pointer flex items-center"
+                                        >
+                                            <Settings className="mr-2 h-4 w-4" />
+                                            <span>Settings</span>
+                                        </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem>
-                                        <LogOut className="mr-2 h-4 w-4" />
-                                        <span>Log out</span>
+                                        <Link
+                                            href={route("logout")}
+                                            method="post"
+                                            as="button"
+                                            className="w-full cursor-pointer flex items-center"
+                                        >
+                                            <LogOut className="mr-2 h-4 w-4" />
+                                            <span>Log out</span>
+                                        </Link>
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
