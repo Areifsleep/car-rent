@@ -108,15 +108,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Link } from "@inertiajs/react";
-import {
-    Briefcase,
-    Users,
-    Search,
-    ChevronLeft,
-    ChevronRight,
-    X,
-} from "lucide-react";
+
+import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import {
@@ -129,223 +122,43 @@ import {
 import Navbar from "@/Components/NavBar";
 import ScrollToTop from "@/Components/ScrollToTop";
 import { Badge } from "@/Components/ui/badge";
+import { CarCard, type Car } from "@/Components/CarCard";
 
-// Assume this data comes from the backend
-interface Car {
-    id: string;
-    name: string;
-    image: string;
-    price: number;
-    seats: number;
-    transmission: string;
-    bags: number;
-    year: number;
-    category: string;
-    location: string;
-    available: boolean;
+// Props interface for the component
+interface CarsGridProps {
+    cars: { data: Car[] };
 }
 
-// Mock data for demonstration
-const mockCars: Car[] = [
-    {
-        id: "lamborghini-urus",
-        name: "Lamborghini Urus",
-        image: "/placeholder.svg?height=600&width=800",
-        price: 750,
-        seats: 4,
-        transmission: "Auto",
-        bags: 2,
-        year: 2023,
-        category: "SUV",
-        location: "Dubai",
-        available: true,
-    },
-    {
-        id: "aston-martin-dbx",
-        name: "Aston Martin DBX",
-        image: "/placeholder.svg?height=600&width=800",
-        price: 500,
-        seats: 4,
-        transmission: "Auto",
-        bags: 2,
-        year: 2023,
-        category: "SUV",
-        location: "Abu Dhabi",
-        available: true,
-    },
-    {
-        id: "bentley-bentayga",
-        name: "Bentley Bentayga",
-        image: "/placeholder.svg?height=600&width=800",
-        price: 600,
-        seats: 5,
-        transmission: "Auto",
-        bags: 3,
-        year: 2023,
-        category: "SUV",
-        location: "Dubai",
-        available: true,
-    },
-    {
-        id: "rolls-royce-cullinan",
-        name: "Rolls Royce Cullinan",
-        image: "/placeholder.svg?height=600&width=800",
-        price: 900,
-        seats: 5,
-        transmission: "Auto",
-        bags: 3,
-        year: 2023,
-        category: "SUV",
-        location: "Dubai",
-        available: true,
-    },
-    {
-        id: "ferrari-purosangue",
-        name: "Ferrari Purosangue",
-        image: "/placeholder.svg?height=600&width=800",
-        price: 850,
-        seats: 4,
-        transmission: "Auto",
-        bags: 2,
-        year: 2023,
-        category: "SUV",
-        location: "Dubai",
-        available: false,
-    },
-    {
-        id: "porsche-cayenne-turbo-gt",
-        name: "Porsche Cayenne Turbo GT",
-        image: "/placeholder.svg?height=600&width=800",
-        price: 450,
-        seats: 4,
-        transmission: "Auto",
-        bags: 3,
-        year: 2023,
-        category: "SUV",
-        location: "Abu Dhabi",
-        available: true,
-    },
-    {
-        id: "ferrari-sf90",
-        name: "Ferrari SF90 Stradale",
-        image: "/placeholder.svg?height=600&width=800",
-        price: 1200,
-        seats: 2,
-        transmission: "Auto",
-        bags: 1,
-        year: 2023,
-        category: "Sports",
-        location: "Dubai",
-        available: true,
-    },
-    {
-        id: "lamborghini-huracan",
-        name: "Lamborghini Huracán",
-        image: "/placeholder.svg?height=600&width=800",
-        price: 950,
-        seats: 2,
-        transmission: "Auto",
-        bags: 1,
-        year: 2022,
-        category: "Sports",
-        location: "Dubai",
-        available: true,
-    },
-    {
-        id: "mclaren-720s",
-        name: "McLaren 720S",
-        image: "/placeholder.svg?height=600&width=800",
-        price: 1100,
-        seats: 2,
-        transmission: "Auto",
-        bags: 1,
-        year: 2023,
-        category: "Sports",
-        location: "Abu Dhabi",
-        available: true,
-    },
-    {
-        id: "bugatti-chiron",
-        name: "Bugatti Chiron",
-        image: "/placeholder.svg?height=600&width=800",
-        price: 2500,
-        seats: 2,
-        transmission: "Auto",
-        bags: 1,
-        year: 2023,
-        category: "Hypercar",
-        location: "Dubai",
-        available: true,
-    },
-    {
-        id: "mercedes-maybach",
-        name: "Mercedes-Maybach S-Class",
-        image: "/placeholder.svg?height=600&width=800",
-        price: 550,
-        seats: 4,
-        transmission: "Auto",
-        bags: 3,
-        year: 2023,
-        category: "Luxury",
-        location: "Dubai",
-        available: true,
-    },
-    {
-        id: "rolls-royce-phantom",
-        name: "Rolls-Royce Phantom",
-        image: "/placeholder.svg?height=600&width=800",
-        price: 1000,
-        seats: 5,
-        transmission: "Auto",
-        bags: 3,
-        year: 2023,
-        category: "Luxury",
-        location: "Abu Dhabi",
-        available: true,
-    },
-];
-
-// Categories for filtering
-const categories = [
-    { value: "all", label: "All Categories" },
-    { value: "SUV", label: "SUV" },
-    { value: "Sports", label: "Sports" },
-    { value: "Luxury", label: "Luxury" },
-    { value: "Hypercar", label: "Hypercar" },
-];
-
-// Locations for filtering
-const locations = [
-    { value: "all", label: "All Locations" },
-    { value: "Dubai", label: "Dubai" },
-    { value: "Abu Dhabi", label: "Abu Dhabi" },
-];
-
-export default function CarGridPage() {
+export default function CarsGrid({ cars }: CarsGridProps) {
     const [searchTerm, setSearchTerm] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("all");
-    const [selectedLocation, setSelectedLocation] = useState("all");
+    const [selectedBrand, setSelectedBrand] = useState("all");
+    const [selectedYear, setSelectedYear] = useState("all");
     const [availableOnly, setAvailableOnly] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [activeFilters, setActiveFilters] = useState<string[]>([]);
     const carsPerPage = 6;
 
+    // Extract unique brands for filtering
+    const uniqueBrands = ["all", ...new Set(cars.data.map((car) => car.brand))];
+
+    // Extract unique years for filtering
+    const uniqueYears = [
+        "all",
+        ...new Set(cars.data.map((car) => car.year.toString())),
+    ];
+
     // Filter cars based on search term and filters
-    const filteredCars = mockCars.filter((car) => {
-        const matchesSearch = car.name
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-        const matchesCategory =
-            selectedCategory === "all" || car.category === selectedCategory;
-        const matchesLocation =
-            selectedLocation === "all" || car.location === selectedLocation;
-        const matchesAvailability = !availableOnly || car.available;
+    const filteredCars = cars.data.filter((car) => {
+        const fullName = `${car.brand} ${car.model}`.toLowerCase();
+        const matchesSearch = fullName.includes(searchTerm.toLowerCase());
+        const matchesBrand =
+            selectedBrand === "all" || car.brand === selectedBrand;
+        const matchesYear =
+            selectedYear === "all" || car.year.toString() === selectedYear;
+        const matchesAvailability = !availableOnly || car.is_available;
 
         return (
-            matchesSearch &&
-            matchesCategory &&
-            matchesLocation &&
-            matchesAvailability
+            matchesSearch && matchesBrand && matchesYear && matchesAvailability
         );
     });
 
@@ -367,12 +180,12 @@ export default function CarGridPage() {
     useEffect(() => {
         const newFilters: string[] = [];
 
-        if (selectedCategory !== "all") {
-            newFilters.push(selectedCategory);
+        if (selectedBrand !== "all") {
+            newFilters.push(selectedBrand);
         }
 
-        if (selectedLocation !== "all") {
-            newFilters.push(selectedLocation);
+        if (selectedYear !== "all") {
+            newFilters.push(`Year: ${selectedYear}`);
         }
 
         if (availableOnly) {
@@ -380,13 +193,13 @@ export default function CarGridPage() {
         }
 
         setActiveFilters(newFilters);
-    }, [selectedCategory, selectedLocation, availableOnly]);
+    }, [selectedBrand, selectedYear, availableOnly]);
 
     // Reset filters
     const resetFilters = () => {
         setSearchTerm("");
-        setSelectedCategory("all");
-        setSelectedLocation("all");
+        setSelectedBrand("all");
+        setSelectedYear("all");
         setAvailableOnly(false);
         setCurrentPage(1);
     };
@@ -395,10 +208,10 @@ export default function CarGridPage() {
     const removeFilter = (filter: string) => {
         if (filter === "Available Only") {
             setAvailableOnly(false);
-        } else if (categories.some((cat) => cat.value === filter)) {
-            setSelectedCategory("all");
-        } else if (locations.some((loc) => loc.value === filter)) {
-            setSelectedLocation("all");
+        } else if (filter.startsWith("Year:")) {
+            setSelectedYear("all");
+        } else {
+            setSelectedBrand("all");
         }
     };
 
@@ -412,7 +225,7 @@ export default function CarGridPage() {
                         <img
                             src="/placeholder.svg?height=400&width=1920"
                             alt="Cars background"
-                            className="object-cover absolute w-full h-full"
+                            className="object-cover w-full h-full absolute"
                         />
                         <div className="absolute inset-0 bg-gradient-to-b from-zinc-900/70 to-zinc-800/90"></div>
                     </div>
@@ -437,7 +250,7 @@ export default function CarGridPage() {
                                 <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-400" />
                                 <Input
                                     type="text"
-                                    placeholder="Search for your dream car..."
+                                    placeholder="Search by brand or model..."
                                     className="pl-10 bg-zinc-700 border-zinc-600 text-white placeholder:text-zinc-400 h-12 text-base"
                                     value={searchTerm}
                                     onChange={(e) =>
@@ -449,40 +262,44 @@ export default function CarGridPage() {
                             {/* Filters */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <Select
-                                    value={selectedCategory}
-                                    onValueChange={setSelectedCategory}
+                                    value={selectedBrand}
+                                    onValueChange={setSelectedBrand}
                                 >
                                     <SelectTrigger className="bg-zinc-700 border-zinc-600 text-white h-12">
-                                        <SelectValue placeholder="Select Category" />
+                                        <SelectValue placeholder="Select Brand" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-zinc-800 border-zinc-700 text-white">
-                                        {categories.map((category) => (
+                                        {uniqueBrands.map((brand) => (
                                             <SelectItem
-                                                key={category.value}
-                                                value={category.value}
+                                                key={brand}
+                                                value={brand}
                                                 className="text-white focus:bg-zinc-700 focus:text-white"
                                             >
-                                                {category.label}
+                                                {brand === "all"
+                                                    ? "All Brands"
+                                                    : brand}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
 
                                 <Select
-                                    value={selectedLocation}
-                                    onValueChange={setSelectedLocation}
+                                    value={selectedYear}
+                                    onValueChange={setSelectedYear}
                                 >
                                     <SelectTrigger className="bg-zinc-700 border-zinc-600 text-white h-12">
-                                        <SelectValue placeholder="Select Location" />
+                                        <SelectValue placeholder="Select Year" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-zinc-800 border-zinc-700 text-white">
-                                        {locations.map((location) => (
+                                        {uniqueYears.map((year) => (
                                             <SelectItem
-                                                key={location.value}
-                                                value={location.value}
+                                                key={year}
+                                                value={year}
                                                 className="text-white focus:bg-zinc-700 focus:text-white"
                                             >
-                                                {location.label}
+                                                {year === "all"
+                                                    ? "All Years"
+                                                    : year}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -509,8 +326,8 @@ export default function CarGridPage() {
                                         className="ml-auto"
                                         disabled={
                                             !searchTerm &&
-                                            selectedCategory === "all" &&
-                                            selectedLocation === "all" &&
+                                            selectedBrand === "all" &&
+                                            selectedYear === "all" &&
                                             !availableOnly
                                         }
                                     >
@@ -562,95 +379,7 @@ export default function CarGridPage() {
                             <>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                     {currentCars.map((car) => (
-                                        <div
-                                            key={car.id}
-                                            className="relative rounded-xl overflow-hidden bg-zinc-800 transition-transform duration-300 hover:transform hover:scale-[1.02] hover:shadow-xl"
-                                        >
-                                            <div className="relative aspect-[4/3] overflow-hidden">
-                                                <img
-                                                    src={
-                                                        car.image ||
-                                                        "/placeholder.svg"
-                                                    }
-                                                    alt={car.name}
-                                                    className="object-cover absolute w-full h-full transition-transform duration-500 hover:scale-105"
-                                                />
-                                                {!car.available && (
-                                                    <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
-                                                        <span className="bg-red-600 text-white px-4 py-2 rounded-full font-bold">
-                                                            Not Available
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                <div className="absolute top-4 right-4">
-                                                    <Badge className="bg-zinc-900 bg-opacity-80 text-white">
-                                                        {car.category}
-                                                    </Badge>
-                                                </div>
-                                            </div>
-
-                                            <div className="p-6 flex flex-col md:flex-row justify-between items-start md:items-center">
-                                                <div>
-                                                    <h2 className="text-2xl font-bold text-white mb-2">
-                                                        {car.name}
-                                                    </h2>
-                                                    <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-300">
-                                                        <div className="flex items-center">
-                                                            <Users className="h-4 w-4 text-amber-500 mr-1" />
-                                                            <span>
-                                                                {car.seats}{" "}
-                                                                Seats
-                                                            </span>
-                                                        </div>
-                                                        <div>
-                                                            <span className="text-zinc-400">
-                                                                {
-                                                                    car.transmission
-                                                                }
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex items-center">
-                                                            <Briefcase className="h-4 w-4 text-amber-500 mr-1" />
-                                                            <span>
-                                                                {car.bags} Bags
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="text-sm text-zinc-400 mt-2">
-                                                        <span>
-                                                            {car.location}
-                                                        </span>{" "}
-                                                        •{" "}
-                                                        <span>{car.year}</span>
-                                                    </div>
-                                                </div>
-
-                                                <div className="mt-4 md:mt-0 flex items-center gap-4">
-                                                    <div className="text-right">
-                                                        <span className="text-amber-500 text-2xl font-bold">
-                                                            ${car.price}
-                                                        </span>
-                                                        <span className="text-xs text-zinc-400 block">
-                                                            /day
-                                                        </span>
-                                                    </div>
-                                                    <Link
-                                                        href={`/cars/${car.id}`}
-                                                    >
-                                                        <Button
-                                                            variant="default"
-                                                            disabled={
-                                                                !car.available
-                                                            }
-                                                        >
-                                                            {car.available
-                                                                ? "Details"
-                                                                : "Unavailable"}
-                                                        </Button>
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <CarCard key={car.id} car={car} />
                                     ))}
                                 </div>
 

@@ -20,6 +20,8 @@ Route::get('/', function () {
 
 Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
 
+
+
 // Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 //     Route::get('/dashboard', function () {
 //         return Inertia::render('Admin/Dashboard');
@@ -36,7 +38,19 @@ Route::middleware(['auth'])->group(function () {
 // });
 Route::get('/admin/dashboard', function () {
     return Inertia::render('Admin/AdminDashboard');
-})->middleware(['auth', 'verified'])->name('admin.dashboard');
+})->middleware(['auth', 'verified', 'role:admin'])->name('admin.dashboard');
+Route::get('/admin/users', function () {
+    return Inertia::render('Admin/Users');
+})->middleware(['auth', 'verified', 'role:admin'])->name('admin.users');
+Route::get('/admin/cars', function () {
+    return Inertia::render('Admin/Cars');
+})->middleware(['auth', 'verified', 'role:admin'])->name('admin.cars');
+Route::get('/admin/bookings', function () {
+    return Inertia::render('Admin/Bookings');
+})->middleware(['auth', 'verified', 'role:admin'])->name('admin.bookings');
+Route::get('/admin/payments', function () {
+    return Inertia::render('Admin/Payments');
+})->middleware(['auth', 'verified', 'role:admin'])->name('admin.payments');
 
 
 // Route::get('/cars', function () {

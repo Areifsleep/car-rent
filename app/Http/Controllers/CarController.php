@@ -19,6 +19,7 @@ class CarController extends Controller
             ->withQueryString(); // keeps filters if using
 
         return Inertia::render('Cars/Index', [
+            
             'cars' => CarResource::collection($cars),
         ]);
     }

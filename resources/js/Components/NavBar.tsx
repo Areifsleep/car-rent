@@ -26,6 +26,7 @@ import {
     DropdownMenuSeparator,
 } from "@/Components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { route } from "ziggy-js";
 
 export default function Navbar() {
     const { auth } = usePage().props;
@@ -98,6 +99,8 @@ export default function Navbar() {
     const goBackToMainMenu = () => {
         setActiveSubmenu(null);
     };
+
+    const url = route().current();
 
     return (
         <header className="sticky top-0 z-40 w-full bg-zinc-900">
@@ -225,19 +228,30 @@ export default function Navbar() {
                                         : "p-4 md:p-0"
                                 )}
                             >
-                                <NavItem href="/" active>
+                                <NavItem href="/" active={url === "home"}>
                                     Home
                                 </NavItem>
-                                <NavItem href="/about">About</NavItem>
+                                <NavItem
+                                    href="/about"
+                                    active={url?.startsWith("about") ?? false}
+                                >
+                                    About
+                                </NavItem>
                                 <NavItem
                                     href="/services"
+                                    active={
+                                        url?.startsWith("services") ?? false
+                                    }
                                     hasDropdown
-                                    onClick={() => openSubmenu("services")}
+                                    onClick={() =>
+                                        openSubmenu("services") ?? false
+                                    }
                                 >
                                     Services
                                 </NavItem>
                                 <NavItem
                                     href="/cars"
+                                    active={url?.startsWith("cars") ?? false}
                                     // hasDropdown
                                 >
                                     Cars
@@ -245,12 +259,18 @@ export default function Navbar() {
 
                                 <NavItem
                                     href="/blog"
+                                    active={url?.startsWith("blog") ?? false}
                                     hasDropdown
                                     onClick={() => openSubmenu("blog")}
                                 >
                                     Blog
                                 </NavItem>
-                                <NavItem href="/contact">Contact</NavItem>
+                                <NavItem
+                                    href="/contact"
+                                    active={url?.startsWith("contact") ?? false}
+                                >
+                                    Contact
+                                </NavItem>
                                 {isMobile && (
                                     <li className="mt-auto pb-6">
                                         <Link

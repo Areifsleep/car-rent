@@ -12,6 +12,8 @@ class CarResource extends JsonResource
      *
      * @return array<string, mixed>
      */
+
+    public static $wrap = false;
     public function toArray(Request $request): array
     {
         return [
@@ -22,7 +24,7 @@ class CarResource extends JsonResource
             'year' => $this->year,
             'rental_price_per_day' => number_format($this->rental_price_per_day, 2),
             'description' => $this->description,
-            'image_url' => $this->image ? asset('storage/' . $this->image) : null,
+            'image' => $this->image ? asset('storage/' . $this->image) : null,
             'is_available' => $this->is_available,
             'created_at' => $this->created_at->toDateString(),
             'updated_at' => $this->updated_at->toDateString(),
