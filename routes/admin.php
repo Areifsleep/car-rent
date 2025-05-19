@@ -11,9 +11,7 @@ Route::middleware(['auth', "role:admin"])->prefix('admin')->group(function () {
         return Inertia::render('Admin/Users');
     })->name('admin.users');
 
-    Route::get('/cars', function () {
-        return Inertia::render('Admin/Cars');
-    })->name('admin.cars');
+    Route::get('/cars', [\App\Http\Controllers\AdminCarController::class, 'index'])->name('admin.cars');
 
     Route::get('/bookings', function () {
         return Inertia::render('Admin/Bookings');

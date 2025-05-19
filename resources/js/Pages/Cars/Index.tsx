@@ -122,7 +122,8 @@ import {
 import Navbar from "@/Components/NavBar";
 import ScrollToTop from "@/Components/ScrollToTop";
 import { Badge } from "@/Components/ui/badge";
-import { CarCard, type Car } from "@/Components/CarCard";
+import { CarCard } from "@/Components/CarCard";
+import { Car } from "@/types/car";
 
 // Props interface for the component
 interface CarsGridProps {

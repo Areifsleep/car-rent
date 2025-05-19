@@ -36,17 +36,23 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/Components/ui/dialog";
-import { carData } from "@/Data/Cars";
 import AdminLayout from "@/Layouts/AdminLayout";
+import { Car } from "@/types/car";
 
-export default function AdminCarsPage() {
+interface CarsGridProps {
+    cars: { data: Car[] };
+}
+
+export default function AdminCarsPage({ cars }: CarsGridProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedCar, setSelectedCar] = useState<string | null>(null);
 
-    const filteredCars = carData.filter((car) =>
-        car.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredCars = cars?.data?.filter((car) =>
+        car.brand.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    console.log(cars);
 
     const handleDeleteClick = (carId: string) => {
         setSelectedCar(carId);
@@ -122,7 +128,7 @@ export default function AdminCarsPage() {
                                     Status
                                 </TableHead>
                                 <TableHead className="text-zinc-300">
-                                    Kapasitas
+                                    Nomor Plat
                                 </TableHead>
                                 <TableHead className="text-zinc-300">
                                     Tahun
@@ -133,7 +139,7 @@ export default function AdminCarsPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {filteredCars.map((car) => (
+                            {filteredCars?.map((car) => (
                                 <TableRow
                                     key={car.id}
                                     className="border-zinc-700 hover:bg-zinc-800"
@@ -146,31 +152,37 @@ export default function AdminCarsPage() {
                                                         car.image ||
                                                         "/placeholder.svg"
                                                     }
-                                                    alt={car.name}
+                                                    alt={car.brand}
                                                     className="object-cover absolute w-full h-full"
                                                 />
                                             </div>
                                             <div>
                                                 <p className="font-medium">
-                                                    {car.name}
+                                                    {car.model}
                                                 </p>
                                                 <p className="text-xs text-zinc-500">
-                                                    {car.engine}
+                                                    {car.brand}
                                                 </p>
                                             </div>
                                         </div>
                                     </TableCell>
                                     <TableCell className="font-medium text-amber-500">
-                                        ${car.price}
+                                        ${car.rental_price_per_day}
                                     </TableCell>
                                     <TableCell>
-                                        <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                                            Tersedia
+                                        <span
+                                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                                                car.is_available
+                                                    ? "bg-green-100 text-green-800"
+                                                    : "bg-red-100 text-red-800"
+                                            }`}
+                                        >
+                                            {car.is_available
+                                                ? "Tersedia"
+                                                : "Tidak Tersedia"}
                                         </span>
                                     </TableCell>
-                                    <TableCell>
-                                        {car.seats} Seats, {car.bags} Bags
-                                    </TableCell>
+                                    <TableCell>{car.license_plate}</TableCell>
                                     <TableCell>{car.year}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end space-x-2">
@@ -189,7 +201,9 @@ export default function AdminCarsPage() {
                                                 size="sm"
                                                 className="text-red-500 hover:bg-red-50 hover:text-red-600"
                                                 onClick={() =>
-                                                    handleDeleteClick(car.id)
+                                                    handleDeleteClick(
+                                                        String(car.id)
+                                                    )
                                                 }
                                             >
                                                 <Trash2 className="h-4 w-4" />
@@ -205,8 +219,8 @@ export default function AdminCarsPage() {
                 {/* Pagination */}
                 <div className="mt-4 flex items-center justify-between">
                     <p className="text-sm text-zinc-500">
-                        Showing 1-{filteredCars.length} of {filteredCars.length}{" "}
-                        cars
+                        Showing 1-{filteredCars?.length} of{" "}
+                        {filteredCars?.length} cars
                     </p>
                     <div className="flex items-center space-x-2">
                         <Button

@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\CarController;
+use App\Http\Controllers\AdminCarController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
 
 
 Route::get('/', function () {
@@ -36,15 +38,16 @@ Route::middleware(['auth'])->group(function () {
 //         return Inertia::render('Dashboard');
 //     })->name('dashboard');
 // });
-Route::get('/admin/dashboard', function () {
-    return Inertia::render('Admin/AdminDashboard');
-})->middleware(['auth', 'verified', 'role:admin'])->name('admin.dashboard');
+// Route::get('/admin/cars', [AdminCarController::class, 'index'])->middleware(['auth', 'verified', 'role:admin'])->name('admin.cars');
+// Route::get('/admin/dashboard', function () {
+//     return Inertia::render('Admin/AdminDashboard');
+// })->middleware(['auth', 'verified', 'role:admin'])->name('admin.dashboard');
 Route::get('/admin/users', function () {
     return Inertia::render('Admin/Users');
 })->middleware(['auth', 'verified', 'role:admin'])->name('admin.users');
-Route::get('/admin/cars', function () {
-    return Inertia::render('Admin/Cars');
-})->middleware(['auth', 'verified', 'role:admin'])->name('admin.cars');
+// Route::get('/admin/cars', function () {
+//     return Inertia::render('Admin/Cars');
+// })->middleware(['auth', 'verified', 'role:admin'])->name('admin.cars');
 Route::get('/admin/bookings', function () {
     return Inertia::render('Admin/Bookings');
 })->middleware(['auth', 'verified', 'role:admin'])->name('admin.bookings');

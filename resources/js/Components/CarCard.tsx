@@ -2,21 +2,9 @@ import { Link } from "@inertiajs/react";
 import { Calendar } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { Badge } from "@/Components/ui/badge";
+import { Car } from "@/types/car";
 
 // Interface for Car data structure based on your Laravel migration
-export interface Car {
-    id: number;
-    brand: string;
-    model: string;
-    license_plate: string;
-    year: number;
-    rental_price_per_day: number;
-    description: string | null;
-    image: string | null;
-    is_available: boolean;
-    created_at: string;
-    updated_at: string;
-}
 
 interface CarCardProps {
     car: Car;
