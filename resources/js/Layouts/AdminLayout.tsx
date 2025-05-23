@@ -5,6 +5,7 @@ import type React from "react";
 import { useState, useEffect } from "react";
 import { Link } from "@inertiajs/react";
 import { usePage } from "@inertiajs/react";
+import { Toaster } from "@/Components/ui/toaster";
 
 import {
     Car,
@@ -228,6 +229,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     onClick={toggleSidebar}
                 ></div>
             )}
+            <Toaster />
         </div>
     );
 }

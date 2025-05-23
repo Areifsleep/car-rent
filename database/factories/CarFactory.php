@@ -18,7 +18,7 @@ class CarFactory extends Factory
             'year' => $this->faker->year,
             'rental_price_per_day' => $this->faker->randomFloat(2, 30, 300),
             'description' => $this->faker->text(100),
-            'image' => $this->faker->imageUrl(),
+            'image' => "https://img.jba.co.id/news/20240919140521coverxHB26en9.webp",
             'is_available' => $this->faker->boolean,
         ];
     }

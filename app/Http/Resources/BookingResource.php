@@ -15,7 +15,7 @@ class BookingResource extends JsonResource
     public function toArray(Request $request): array
 {
     return [
-        'id' => $this->id,
+    'id' => $this->id,
         'user_id' => $this->user_id,
         'car_id' => $this->car_id,
         'start_date' => $this->start_date,
@@ -24,6 +24,14 @@ class BookingResource extends JsonResource
         'status' => $this->status,
         'created_at' => $this->created_at,
         'updated_at' => $this->updated_at,
+        
+        // Muat relasi
+        'user' => new UserResource($this->whenLoaded('user')),
+        'car' => new CarResource($this->whenLoaded('car')),
+        'payment' => new PaymentResource($this->whenLoaded('payment')),
+        
+        // Tambahkan data kalkulasi
+        // 'total_days' => $this->getTotalDays(),
     ];
 }
 }

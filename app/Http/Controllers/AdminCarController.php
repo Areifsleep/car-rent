@@ -27,17 +27,49 @@ class AdminCarController extends Controller
     /**
      * Show the form for creating a new resource.
      */
+    
+/**
+ * Show the form for creating a new resource.
+ */
     public function create()
     {
-        //
+        return Inertia::render('Admin/AddCar', [
+            'car' => new Car(),
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+/**
+ * Store a newly created resource in storage.
+ */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'brand' => 'required|string|max:255',
+            'model' => 'required|string|max:255',
+            'license_plate' => 'required|string|max:20|unique:cars,license_plate',
+            'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'rental_price_per_day' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+            'is_available' => 'boolean',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('cars', 'public');
+            $validated['image'] = $imagePath;
+        }
+
+        // Set default availability if not provided
+        if (!isset($validated['is_available'])) {
+            $validated['is_available'] = true;
+        }
+
+        // Create the car
+        $car = Car::create($validated);
+
+        // Return a response
+        return redirect()->route('admin.cars')->with('success', 'Mobil berhasil ditambahkan.');
     }
 
     /**

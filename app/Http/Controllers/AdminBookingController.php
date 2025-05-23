@@ -14,11 +14,11 @@ class AdminBookingController extends Controller
      */
     public function index()
     {
-        $bookings = Booking::query()
+        $bookings = Booking::with(['user', 'car', 'payment'])
         ->paginate(10)
         ->withQueryString(); // keeps filters if using
 
-    return Inertia::render("Admin/Cars", [
+    return Inertia::render("Admin/Bookings", [
         
         'bookings' => BookingResource::collection($bookings),
     ]);

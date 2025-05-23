@@ -48,7 +48,7 @@ export default function AdminCarsPage({ cars }: CarsGridProps) {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedCar, setSelectedCar] = useState<string | null>(null);
 
-    const filteredCars = cars?.data?.filter((car) =>
+    const filteredCars = cars.data.filter((car) =>
         car.brand.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -71,7 +71,7 @@ export default function AdminCarsPage({ cars }: CarsGridProps) {
             <div>
                 <div className="mb-6 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Manajemen Mobil</h1>
-                    <Link href="/admin/cars/add">
+                    <Link href={route("admin.addcar")}>
                         <Button variant="default">
                             <Plus className="mr-2 h-4 w-4" /> Tambah Mobil
                         </Button>
@@ -107,7 +107,10 @@ export default function AdminCarsPage({ cars }: CarsGridProps) {
                                 </SelectItem>
                             </SelectContent>
                         </Select>
-                        <Button variant="outline" className="flex items-center">
+                        <Button
+                            variant="outline"
+                            className="flex items-center bg-transparent "
+                        >
                             <Filter className="mr-2 h-4 w-4" /> Filter
                         </Button>
                     </div>
@@ -170,17 +173,47 @@ export default function AdminCarsPage({ cars }: CarsGridProps) {
                                         ${car.rental_price_per_day}
                                     </TableCell>
                                     <TableCell>
-                                        <span
-                                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                                                car.is_available
-                                                    ? "bg-green-100 text-green-800"
-                                                    : "bg-red-100 text-red-800"
-                                            }`}
-                                        >
-                                            {car.is_available
-                                                ? "Tersedia"
-                                                : "Tidak Tersedia"}
-                                        </span>
+                                        <div className="flex justify-center sm:justify-start">
+                                            <span
+                                                className={`inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-xs font-medium 
+                ${
+                    car.is_available
+                        ? "bg-green-100 text-green-800 border border-green-300"
+                        : "bg-red-100 text-red-800 border border-red-300"
+                }
+                sm:min-w-[93px]
+                max-sm:w-8 max-sm:h-8 max-sm:rounded-full max-sm:p-0 max-sm:min-w-0
+                `}
+                                            >
+                                                <span className="hidden sm:inline-block">
+                                                    {car.is_available
+                                                        ? "Tersedia"
+                                                        : "Tidak Tersedia"}
+                                                </span>
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="sm:hidden w-4 h-4"
+                                                    viewBox="0 0 20 20"
+                                                    fill="currentColor"
+                                                >
+                                                    {car.is_available ? (
+                                                        // Checkmark icon untuk "Tersedia"
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                    ) : (
+                                                        // X icon untuk "Tidak Tersedia"
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                    )}
+                                                </svg>
+                                            </span>
+                                        </div>
                                     </TableCell>
                                     <TableCell>{car.license_plate}</TableCell>
                                     <TableCell>{car.year}</TableCell>
@@ -190,6 +223,7 @@ export default function AdminCarsPage({ cars }: CarsGridProps) {
                                                 href={`/admin/cars/edit/${car.id}`}
                                             >
                                                 <Button
+                                                    className="bg-transparent"
                                                     variant="outline"
                                                     size="sm"
                                                 >
@@ -199,7 +233,7 @@ export default function AdminCarsPage({ cars }: CarsGridProps) {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="text-red-500 hover:bg-red-50 hover:text-red-600"
+                                                className="text-red-500 bg-transparent hover:bg-red-50 hover:text-red-600"
                                                 onClick={() =>
                                                     handleDeleteClick(
                                                         String(car.id)

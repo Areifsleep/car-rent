@@ -12,12 +12,14 @@ Route::middleware(['auth', "role:admin"])->prefix('admin')->group(function () {
     })->name('admin.users');
 
     Route::get('/cars', [\App\Http\Controllers\AdminCarController::class, 'index'])->name('admin.cars');
+    Route::get('/addcar', [\App\Http\Controllers\AdminCarController::class, 'create'])->name('admin.addcar');
+    Route::get('/bookings', [\App\Http\Controllers\AdminBookingController::class, 'index'])->name('admin.bookings');
 
-    Route::get('/bookings', function () {
-        return Inertia::render('Admin/Bookings');
-    })->name('admin.bookings');
+    // Route::get('/bookings', function () {
+    //     return Inertia::render('Admin/Bookings');
+    // })->name('admin.bookings');
     Route::get('/payments', function () {
-        return Inertia::render('Admin/Bookings');
+        return Inertia::render('Admin/Payments');
     })->name('admin.payments');
 });
 

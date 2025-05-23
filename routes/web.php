@@ -48,9 +48,9 @@ Route::get('/admin/users', function () {
 // Route::get('/admin/cars', function () {
 //     return Inertia::render('Admin/Cars');
 // })->middleware(['auth', 'verified', 'role:admin'])->name('admin.cars');
-Route::get('/admin/bookings', function () {
-    return Inertia::render('Admin/Bookings');
-})->middleware(['auth', 'verified', 'role:admin'])->name('admin.bookings');
+// Route::get('/admin/bookings', function () {
+//     return Inertia::render('Admin/Bookings');
+// })->middleware(['auth', 'verified', 'role:admin'])->name('admin.bookings');
 Route::get('/admin/payments', function () {
     return Inertia::render('Admin/Payments');
 })->middleware(['auth', 'verified', 'role:admin'])->name('admin.payments');
