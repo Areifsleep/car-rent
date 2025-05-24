@@ -12,9 +12,11 @@ Route::middleware(['auth', "role:admin"])->prefix('admin')->group(function () {
     })->name('admin.users');
 
     Route::get('/cars', [\App\Http\Controllers\AdminCarController::class, 'index'])->name('admin.cars');
-    Route::get('/addcar', [\App\Http\Controllers\AdminCarController::class, 'create'])->name('admin.addcar');
-    Route::post('/addcar', [\App\Http\Controllers\AdminCarController::class, 'store'])->name('admin.addcar.store');
+    Route::get('/cars/create', [\App\Http\Controllers\AdminCarController::class, 'create'])->name('admin.cars.create');
+    Route::post('/cars', [\App\Http\Controllers\AdminCarController::class, 'store'])->name('admin.cars.store');
     Route::get('/bookings', [\App\Http\Controllers\AdminBookingController::class, 'index'])->name('admin.bookings');
+    Route::get('/cars/{car}/edit', [\App\Http\Controllers\AdminCarController::class, 'edit'])->name('admin.cars.edit'); // Route untuk halaman edit
+    Route::put('/cars/{car}', [\App\Http\Controllers\AdminCarController::class, 'update'])->name('admin.cars.update');
 
     // Route::get('/bookings', function () {
     //     return Inertia::render('Admin/Bookings');

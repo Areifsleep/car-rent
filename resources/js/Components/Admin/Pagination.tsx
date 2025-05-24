@@ -1,11 +1,10 @@
 import { Button } from "@/Components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { router } from "@inertiajs/react";
 
 interface PaginationProps {
     meta: {
         current_page: number;
-        from: number;
+        from: number | null;
         last_page: number;
         links: Array<{
             url: string | null;
@@ -14,7 +13,7 @@ interface PaginationProps {
         }>;
         path: string;
         per_page: number;
-        to: number;
+        to: number | null;
         total: number;
     };
     onPageChange: (page: number) => void;

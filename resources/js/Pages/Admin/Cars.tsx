@@ -332,25 +332,28 @@ import { Car } from "@/types/car";
 
 interface CarsGridProps {
     cars: {
+        // Objek 'cars' ini adalah objek paginator dari Laravel
         data: Car[];
-        meta: {
-            current_page: number;
-            from: number;
-            last_page: number;
-            links: Array<{
-                url: string | null;
-                label: string;
-                active: boolean;
-            }>;
-            path: string;
-            per_page: number;
-            to: number;
-            total: number;
-        };
+        current_page: number;
+        from: number | null; // 'from' bisa null jika tidak ada data
+        last_page: number;
+        links: Array<{
+            url: string | null;
+            label: string;
+            active: boolean;
+        }>;
+        path: string;
+        per_page: number;
+        to: number | null; // 'to' bisa null jika tidak ada data
+        total: number;
+        // Anda mungkin juga memiliki next_page_url, prev_page_url, dll.
+    };
+    filters: {
+        search: string; // Untuk menyimpan nilai filter pencarian
     };
 }
 
-export default function AdminCarsPage({ cars }: CarsGridProps) {
+export default function AdminCarsPage({ cars, filters }: CarsGridProps) {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedCar, setSelectedCar] = useState<Car | null>(null);
 
@@ -375,14 +378,18 @@ export default function AdminCarsPage({ cars }: CarsGridProps) {
             <div>
                 <div className="mb-6 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Manajemen Mobil</h1>
-                    <Link href={route("admin.addcar")}>
+                    <Link href={route("admin.cars.create")}>
                         <Button variant="default">
                             <Plus className="mr-2 h-4 w-4" /> Tambah Mobil
                         </Button>
                     </Link>
                 </div>
 
-                <CarTable cars={cars} onDeleteClick={handleDeleteClick} />
+                <CarTable
+                    cars={cars}
+                    filters={filters}
+                    onDeleteClick={handleDeleteClick}
+                />
 
                 {/* Delete Confirmation Dialog */}
                 <Dialog

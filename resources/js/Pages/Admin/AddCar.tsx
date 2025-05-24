@@ -93,7 +93,7 @@ export default function AddCarPage() {
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
 
-        post(route("admin.addcar.store"), {
+        post(route("admin.cars.store"), {
             preserveScroll: true,
             onSuccess: () => {
                 toast({
