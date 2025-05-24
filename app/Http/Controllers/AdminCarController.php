@@ -66,7 +66,7 @@ class AdminCarController extends Controller
         }
 
         // Create the car
-        $car = Car::create($validated);
+        Car::create($validated);
 
         // Return a response
         return redirect()->route('admin.cars')->with('success', 'Mobil berhasil ditambahkan.');

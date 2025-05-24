@@ -13,6 +13,7 @@ Route::middleware(['auth', "role:admin"])->prefix('admin')->group(function () {
 
     Route::get('/cars', [\App\Http\Controllers\AdminCarController::class, 'index'])->name('admin.cars');
     Route::get('/addcar', [\App\Http\Controllers\AdminCarController::class, 'create'])->name('admin.addcar');
+    Route::post('/addcar', [\App\Http\Controllers\AdminCarController::class, 'store'])->name('admin.addcar.store');
     Route::get('/bookings', [\App\Http\Controllers\AdminBookingController::class, 'index'])->name('admin.bookings');
 
     // Route::get('/bookings', function () {
