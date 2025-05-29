@@ -17,7 +17,7 @@ Route::middleware(['auth', "role:admin"])->prefix('admin')->group(function () {
     Route::get('/bookings', [\App\Http\Controllers\AdminBookingController::class, 'index'])->name('admin.bookings');
     Route::get('/cars/{car}/edit', [\App\Http\Controllers\AdminCarController::class, 'edit'])->name('admin.cars.edit'); // Route untuk halaman edit
     Route::put('/cars/{car}', [\App\Http\Controllers\AdminCarController::class, 'update'])->name('admin.cars.update');
-
+    Route::delete('/cars/{car}', [\App\Http\Controllers\AdminCarController::class, 'destroy'])->name('admin.cars.destroy');
     // Route::get('/bookings', function () {
     //     return Inertia::render('Admin/Bookings');
     // })->name('admin.bookings');

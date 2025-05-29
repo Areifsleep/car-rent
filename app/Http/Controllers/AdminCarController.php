@@ -7,6 +7,7 @@ use App\Models\Car;
 use App\Http\Resources\CarResource;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class AdminCarController extends Controller
 {
@@ -39,6 +40,10 @@ class AdminCarController extends Controller
         'cars' => $cars,
         'filters' => [
             'search' => $search,
+        ],
+        'flash' => [
+            'success' => session('success'),
+            'error' => session('error'),
         ],
     ]);
 }
@@ -112,7 +117,7 @@ class AdminCarController extends Controller
  */
 public function edit(Car $car) // Route model binding
 {
-    return Inertia::render('Admin/Cars/Edit', [ // Buat halaman Edit.tsx
+    return Inertia::render('Admin/EditCar', [ // Buat halaman Edit.tsx
         'car' => new CarResource($car), // Kirim data mobil yang akan diedit
     ]);
 }
@@ -157,21 +162,31 @@ public function update(Request $request, Car $car) // Route model binding
      * Remove the specified resource from storage.
      */
     public function destroy(Car $car)
-{
-    // Check if car has associated bookings before deleting
-    $hasBookings = $car->bookings()->exists();
-    
-    if ($hasBookings) {
-        return back()->with('error', 'Mobil ini tidak dapat dihapus karena memiliki booking terkait.');
+    {
+        try {
+            // Check if car has associated bookings
+            $hasBookings = $car->bookings()->exists();
+            
+            if ($hasBookings) {
+                return redirect()->route('admin.cars')
+                    ->with('error', 'Mobil ini tidak dapat dihapus karena memiliki booking terkait.');
+            }
+            
+            // Delete associated image if exists
+            if ($car->image) {
+                Storage::disk('public')->delete($car->image);
+            }
+            
+            $carInfo = $car->brand . ' ' . $car->model;
+            $car->delete();
+            
+            return redirect()->route('admin.cars')
+                ->with('success', "Mobil {$carInfo} berhasil dihapus.");
+            
+        } catch (\Exception $e) {
+            Log::error('Error deleting car: ' . $e->getMessage());
+            return redirect()->route('admin.cars')
+                ->with('error', 'Terjadi kesalahan saat menghapus mobil.');
+        }
     }
-    
-    // Delete associated image if exists
-    if ($car->image) {
-        Storage::disk('public')->delete($car->image);
-    }
-    
-    $car->delete();
-    
-    return redirect()->route('admin.cars')->with('success', 'Mobil berhasil dihapus.');
-}
 }
