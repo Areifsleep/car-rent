@@ -14,10 +14,72 @@ class Payment extends Model
         'amount',
         'payment_method',
         'payment_status',
+        'transaction_id',
+        'paid_at',
+        'gateway_response',
     ];
 
+    protected $casts = [
+        'amount' => 'decimal:2',
+        'paid_at' => 'datetime',
+        'gateway_response' => 'array',
+    ];
+
+    // Relations
     public function booking()
     {
         return $this->belongsTo(Booking::class);
+    }
+    
+    // Helper methods untuk PaymentResource
+    public function isPaid()
+    {
+        return $this->payment_status === 'paid';
+    }
+    
+    public function isPending()
+    {
+        return $this->payment_status === 'pending';
+    }
+    
+    public function canBeRefunded()
+    {
+        return $this->payment_status === 'paid' && 
+               $this->booking && 
+               $this->booking->status !== 'completed';
+    }
+    
+    public function isFailed()
+    {
+        return $this->payment_status === 'failed';
+    }
+    
+    public function isRefunded()
+    {
+        return $this->payment_status === 'refunded';
+    }
+    
+    public function isCancelled()
+    {
+        return $this->payment_status === 'cancelled';
+    }
+    
+    // Scopes
+    public function scopePaid($query)
+    {
+        return $query->where('payment_status', 'paid');
+    }
+    
+    public function scopePending($query)
+    {
+        return $query->where('payment_status', 'pending');
+    }
+    
+    public function scopeRefundable($query)
+    {
+        return $query->where('payment_status', 'paid')
+                    ->whereHas('booking', function($q) {
+                        $q->where('status', '!=', 'completed');
+                    });
     }
 }

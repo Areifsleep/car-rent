@@ -2,73 +2,115 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Booking;
-use App\Http\Resources\BookingResource;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Http\Resources\BookingResource;
+use Illuminate\Support\Facades\Log;
 
 class AdminBookingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $bookings = Booking::with(['user', 'car', 'payment'])
-        ->paginate(10)
-        ->withQueryString(); // keeps filters if using
-
-    return Inertia::render("Admin/Bookings", [
+        $status = $request->input('status');
+        $search = $request->input('search');
         
-        'bookings' => BookingResource::collection($bookings),
-    ]);
+        $query = Booking::with(['user', 'car', 'payment']);
+        
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
+        
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->whereHas('user', function($userQuery) use ($search) {
+                    $userQuery->where('name', 'like', "%{$search}%")
+                             ->orWhere('email', 'like', "%{$search}%");
+                })->orWhereHas('car', function($carQuery) use ($search) {
+                    $carQuery->where('brand', 'like', "%{$search}%")
+                            ->orWhere('model', 'like', "%{$search}%")
+                            ->orWhere('license_plate', 'like', "%{$search}%");
+                })->orWhere('id', 'like', "%{$search}%");
+            });
+        }
+        
+        // Use paginate() instead of simplePaginate() to get proper links array
+        $bookings = $query->orderBy('created_at', 'desc')
+                         ->paginate(15)
+                         ->withQueryString();
+        
+        return Inertia::render('Admin/Bookings', [
+            'bookings' => $bookings, // Send the whole paginator object like cars
+            'filters' => [
+                'status' => $status,
+                'search' => $search,
+            ],
+            // Add flash messages like in AdminCarController
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+            ],
+        ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    
+    public function show(Booking $booking)
     {
-        //
+        return Inertia::render('Admin/Bookings/Show', [
+            'booking' => new BookingResource($booking->load(['user', 'car', 'payment']))
+        ]);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    
+    public function updateStatus(Request $request, Booking $booking)
     {
-        //
+        $validated = $request->validate([
+            'status' => 'required|in:pending,confirmed,cancelled'
+        ]);
+        
+        $oldStatus = $booking->status;
+        $booking->update(['status' => $validated['status']]);
+        
+        // Handle status changes
+        if ($validated['status'] === 'confirmed' && $oldStatus === 'pending') {
+            $this->handleBookingConfirmation($booking);
+        } elseif ($validated['status'] === 'cancelled') {
+            $this->handleBookingCancellation($booking);
+        }
+        
+        // Redirect with flash message like in cars controller
+        return redirect()->route('admin.bookings')
+            ->with('success', 'Status booking berhasil diperbarui.');
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    
+    private function handleBookingConfirmation(Booking $booking)
     {
-        //
+        // Update payment status if payment exists
+        if ($booking->payment) {
+            $booking->payment->update([
+                'payment_status' => 'confirmed',
+                'paid_at' => now()
+            ]);
+        }
+        
+        // Send confirmation email
+        // Mail::to($booking->user->email)->send(new BookingConfirmed($booking));
+        
+        // Log activity
+        Log::info("Booking {$booking->id} confirmed by admin");
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    
+    private function handleBookingCancellation(Booking $booking)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        // Update payment status if payment exists
+        if ($booking->payment) {
+            $booking->payment->update(['payment_status' => 'refunded']);
+        }
+        
+        // Process refund if payment was made
+        // $this->processRefund($booking);
+        
+        // Send cancellation email
+        // Mail::to($booking->user->email)->send(new BookingCancelled($booking));
+        
+        Log::info("Booking {$booking->id} cancelled by admin");
     }
 }

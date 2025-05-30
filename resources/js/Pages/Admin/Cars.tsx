@@ -363,6 +363,7 @@ export default function AdminCarsPage({ cars, filters, flash }: CarsGridProps) {
     const [selectedCar, setSelectedCar] = useState<Car | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const { toast } = useToast();
+    console.log(cars.links);
 
     const handleDeleteClick = (car: Car) => {
         setSelectedCar(car);

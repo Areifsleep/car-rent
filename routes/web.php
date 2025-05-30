@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\BookingController;
 
 
 
@@ -30,8 +31,14 @@ Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
 //     })->name('admin.dashboard');
 // });
 
+
 Route::middleware(['auth'])->group(function () {
     Route::redirect("dashboard", "/");
+    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+    Route::get('/bookings/create/{car}', [BookingController::class, 'create'])->name('bookings.create');
+    Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+    Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
+    Route::patch('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
 });
 // Route::middleware(['auth'])->group(function () {
 //     Route::get('/dashboard', function () {

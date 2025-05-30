@@ -17,4 +17,8 @@ export interface Booking {
     user?: User;
     car?: Car;
     payment?: Payment;
+
+    duration_days?: number;
+    status_label?: string;
+    can_cancel?: boolean;
 }

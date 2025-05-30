@@ -30,8 +30,24 @@ class BookingResource extends JsonResource
         'car' => new CarResource($this->whenLoaded('car')),
         'payment' => new PaymentResource($this->whenLoaded('payment')),
         
-        // Tambahkan data kalkulasi
-        // 'total_days' => $this->getTotalDays(),
+        'duration_days' => $this->getDurationDays(),
+        'status_label' => $this->getStatusLabel(),
+        'can_cancel' => $this->canBeCancelled(),
     ];
 }
+private function getStatusLabel()
+    {
+        return match($this->status) {
+            'pending' => 'Menunggu Konfirmasi',
+            'confirmed' => 'Dikonfirmasi', 
+            'cancelled' => 'Dibatalkan',
+            default => 'Unknown'
+        };
+    }
+    
+    private function canBeCancelled()
+    {
+        return $this->status === 'pending' && 
+               $this->start_date->isAfter(now()->addDay());
+    }
 }
