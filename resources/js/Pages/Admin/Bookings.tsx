@@ -23,7 +23,7 @@ import {
 import AdminLayout from "@/Layouts/AdminLayout";
 import { Booking } from "@/types/booking";
 import { formatDate, formatCurrency } from "@/lib/utils";
-import { router, usePage } from "@inertiajs/react";
+import { router } from "@inertiajs/react";
 import { useToast } from "@/Hooks/use-toast";
 import { BookingDetailsDialog } from "@/Components/Admin/BookingDetailsDialog";
 import Pagination from "@/Components/Admin/Pagination";
@@ -304,6 +304,7 @@ export default function AdminBookingsPage({
                                     <TableCell className="text-right">
                                         <Button
                                             variant="outline"
+                                            className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
                                             size="sm"
                                             onClick={() =>
                                                 handleViewDetails(booking)

@@ -175,6 +175,7 @@ export function BookingDetailsDialog({
 
                     <Button
                         variant="outline"
+                        className="bg-zinc-700 text-white hover:bg-zinc-600"
                         onClick={() => onOpenChange(false)}
                         disabled={isUpdating}
                     >

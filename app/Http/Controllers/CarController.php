@@ -2,92 +2,79 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CarResource;
 use App\Models\Car;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Inertia\Response;
+use App\Http\Resources\CarResource;
 
 class CarController extends Controller
 {
-    // GET /cars
-    public function index()
+    public function index(Request $request)
     {
-        $cars = Car::query()
-            ->orderBy('created_at', 'desc')
-            ->paginate(10)
-            ->withQueryString(); // keeps filters if using
-
-        return Inertia::render('Cars/Index', [
-            
-            'cars' => CarResource::collection($cars),
-        ]);
-    }
-
-    public function create()
-    {
-        //
-    }
-
-    // POST /cars
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'brand' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
-            'license_plate' => 'required|string|max:20|unique:cars',
-            'year' => 'required|integer|between:1900,' . now()->year,
-            'rental_price_per_day' => 'required|numeric|min:0',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'is_available' => 'boolean',
-        ]);
-
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('car_images', 'public');
+        $search = $request->input('search');
+        $brand = $request->input('brand');
+        $year = $request->input('year');
+        $available_only = $request->boolean('available_only');
+        
+        $query = Car::query()->where('is_available', true); // Only available cars for users
+        
+        // Apply filters
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('brand', 'like', "%{$search}%")
+                  ->orWhere('model', 'like', "%{$search}%")
+                  ->orWhere('license_plate', 'like', "%{$search}%");
+            });
         }
-
-        Car::create($validated);
-
-        return redirect()->route('cars.index')->with('success', 'Car created successfully.');
+        
+        if ($brand && $brand !== 'all') {
+            $query->where('brand', $brand);
+        }
+        
+        if ($year && $year !== 'all') {
+            $query->where('year', $year);
+        }
+        
+        // Get unique brands and years for filters - PERBAIKAN DI SINI
+        $brands = Car::where('is_available', true)
+                     ->distinct()
+                     ->pluck('brand')
+                     ->filter() // Remove null values
+                     ->sort() // Sort tanpa parameter
+                     ->values() // Reset keys
+                     ->toArray(); // Convert to array
+        
+        $years = Car::where('is_available', true)
+                    ->distinct()
+                    ->pluck('year')
+                    ->filter() // Remove null values
+                    ->sortDesc() // Sort descending
+                    ->values() // Reset keys
+                    ->toArray(); // Convert to array
+        
+        $cars = $query->orderBy('created_at', 'desc')
+                     ->paginate(12) // 12 cards per page
+                     ->withQueryString();
+        
+        return Inertia::render('Cars/Index', [
+            'cars' => $cars,
+            'filters' => [
+                'search' => $search,
+                'brand' => $brand,
+                'year' => $year,
+                'available_only' => $available_only,
+            ],
+            'filterOptions' => [
+                'brands' => $brands,
+                'years' => $years,
+            ]
+        ]);
     }
-
-    // GET /cars/{car}
-    public function show(Car $car): Response
+    
+    public function show(Car $car)
     {
         return Inertia::render('Cars/Show', [
-            'car' => new CarResource($car),
+            'car' => new CarResource($car)
         ]);
-    }
-
-    // PUT/PATCH /cars/{car}
-    public function update(Request $request, Car $car)
-    {
-        $validated = $request->validate([
-            'brand' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
-            'license_plate' => 'required|string|max:20|unique:cars,license_plate,' . $car->id,
-            'year' => 'required|integer|between:1900,' . now()->year,
-            'rental_price_per_day' => 'required|numeric|min:0',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'is_available' => 'boolean',
-        ]);
-
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('car_images', 'public');
-        }
-
-        $car->update($validated);
-
-        return redirect()->route('cars.index')->with('success', 'Car updated successfully.');
-    }
-
-    // DELETE /cars/{car}
-    public function destroy(Car $car)
-    {
-        $car->delete();
-
-        return redirect()->route('cars.index')->with('success', 'Car deleted successfully.');
     }
 }
