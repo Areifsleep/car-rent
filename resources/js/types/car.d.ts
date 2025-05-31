@@ -2,6 +2,7 @@ export interface Car {
     id: number;
     brand: string;
     model: string;
+    seats: number;
     license_plate: string;
     year: number;
     rental_price_per_day: string;

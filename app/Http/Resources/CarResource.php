@@ -20,6 +20,7 @@ class CarResource extends JsonResource
             'id' => $this->id,
             'brand' => $this->brand,
             'model' => $this->model,
+            'seats' => $this->seats,
             'license_plate' => $this->license_plate,
             'year' => $this->year,
             'rental_price_per_day' => number_format($this->rental_price_per_day, 2),

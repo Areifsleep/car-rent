@@ -14,6 +14,7 @@ class CarFactory extends Factory
         return [
             'brand' => $this->faker->company,
             'model' => $this->faker->word,
+            'seats' => $this->faker->numberBetween(2, 7),
             'license_plate' => strtoupper($this->faker->bothify('??-###-??')),
             'year' => $this->faker->year,
             'rental_price_per_day' => $this->faker->randomFloat(2, 30, 300),

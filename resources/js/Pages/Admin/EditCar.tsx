@@ -32,6 +32,7 @@ export default function EditCarPage({ car }: EditCarPageProps) {
         model: car.data.model || "",
         license_plate: car.data.license_plate || "",
         year: car.data.year || currentYear,
+        seats: car.data.seats || 5,
         rental_price_per_day: car.data.rental_price_per_day || 0,
         description: car.data.description || "",
         is_available: car.data.is_available ?? true,
@@ -267,6 +268,41 @@ export default function EditCarPage({ car }: EditCarPageProps) {
                                                             {errors.year}
                                                         </p>
                                                     )}
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="seats">
+                                                        Number of Seats
+                                                    </Label>
+                                                    <Input
+                                                        id="seats"
+                                                        type="number"
+                                                        min={1}
+                                                        max={50}
+                                                        className={`bg-zinc-700 border-zinc-600 text-white placeholder:text-zinc-400 ${
+                                                            errors.seats
+                                                                ? "border-red-500"
+                                                                : ""
+                                                        }`}
+                                                        value={data.seats}
+                                                        onChange={(e) =>
+                                                            setData(
+                                                                "seats",
+                                                                Number(
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            )
+                                                        }
+                                                    />
+                                                    {errors.seats && (
+                                                        <p className="text-red-500 text-xs mt-1">
+                                                            {errors.seats}
+                                                        </p>
+                                                    )}
+                                                    <p className="text-xs text-zinc-400">
+                                                        Enter the number of
+                                                        passenger seats (1-50)
+                                                    </p>
                                                 </div>
 
                                                 <div className="space-y-2">

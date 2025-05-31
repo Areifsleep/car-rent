@@ -72,9 +72,25 @@ class CarController extends Controller
     }
     
     public function show(Car $car)
-    {
-        return Inertia::render('Cars/Show', [
-            'car' => new CarResource($car)
-        ]);
-    }
+{
+    // Load related data if needed
+    $car->load(['bookings' => function($query) {
+        $query->where('status', '!=', 'cancelled')
+              ->where('end_date', '>=', now());
+    }]);
+    
+    // Get similar cars (same brand, different model)
+    $similarCars = Car::where('is_available', true)
+                      ->where('brand', $car->brand)
+                      ->where('id', '!=', $car->id)
+                      ->limit(4)
+                      ->get();
+    
+    return Inertia::render('Cars/Show', [
+        'car' => new CarResource($car),
+        'similarCars' => CarResource::collection($similarCars),
+        'isAvailable' => $car->is_available,
+        'upcomingBookings' => $car->bookings->count(),
+    ]);
+}
 }

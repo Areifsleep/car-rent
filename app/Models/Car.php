@@ -18,6 +18,14 @@ class Car extends Model
         'description',
         'image',
         'is_available',
+        'seats',
+    ];
+
+    protected $casts = [
+        // 'rental_price_per_day' => 'decimal:2',
+        // 'is_available' => 'boolean',
+        'seats' => 'integer',
+        // 'year' => 'integer',
     ];
 
     public function bookings()

@@ -10,6 +10,8 @@ return new class extends Migration {
             $table->id();
             $table->string('brand');
             $table->string('model');
+            $table->unsignedTinyInteger('seats')->default(5);
+
             $table->string('license_plate')->unique();
             $table->integer('year');
             $table->decimal('rental_price_per_day', 8, 2);

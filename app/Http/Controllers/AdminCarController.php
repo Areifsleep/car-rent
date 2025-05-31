@@ -72,6 +72,7 @@ class AdminCarController extends Controller
             'model' => 'required|string|max:255',
             'license_plate' => 'required|string|max:20|unique:cars,license_plate',
             'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'seats' => 'required|integer|min:1|max:50',
             'rental_price_per_day' => 'required|numeric|min:0',
             'description' => 'nullable|string',
             'is_available' => 'boolean',
@@ -133,6 +134,7 @@ public function update(Request $request, Car $car) // Route model binding
         // Validasi license_plate unik, tapi abaikan mobil saat ini
         'license_plate' => 'required|string|max:20|unique:cars,license_plate,' . $car->id,
         'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+        'seats' => 'required|integer|min:1|max:50',
         'rental_price_per_day' => 'required|numeric|min:0',
         'description' => 'nullable|string',
         'is_available' => 'boolean',
