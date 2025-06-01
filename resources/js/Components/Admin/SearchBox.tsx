@@ -27,7 +27,7 @@ export default function SearchBox({
                 { search: searchValue, page: 1 },
                 { preserveState: true, preserveScroll: true }
             );
-        }, 300),
+        }, 500),
         [routeName]
     );
 

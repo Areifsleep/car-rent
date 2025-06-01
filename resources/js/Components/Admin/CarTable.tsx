@@ -19,6 +19,7 @@ import {
 } from "@/Components/ui/table";
 import { Search, Pencil, Trash2, Users } from "lucide-react";
 import { Car } from "@/types/car";
+import SearchBox from "@/Components/Admin/SearchBox";
 import Pagination from "@/Components/Admin/Pagination";
 
 interface CarTableProps {
@@ -79,20 +80,12 @@ export default function CarTable({
     return (
         <div className="space-y-4">
             <div className="flex items-center space-x-4">
-                <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-                    <Input
-                        placeholder="Cari mobil..."
-                        className="pl-10 bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-400"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-                    />
-                </div>
-                <Button onClick={handleSearch} variant="default">
-                    <Search className="h-4 w-4 mr-2" />
-                    Cari
-                </Button>
+                <SearchBox
+                    value={searchTerm}
+                    onChange={setSearchTerm}
+                    placeholder="Cari mobil berdasarkan brand, model, atau plat nomor..."
+                    routeName="admin.cars"
+                />
             </div>
 
             <div className="rounded-md border border-zinc-700">
