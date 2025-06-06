@@ -263,6 +263,9 @@ export default function Index({ cars, filters }: IndexProps) {
 
 // Enhanced Car Card Component
 function EnhancedCarCard({ car }: { car: Car }) {
+    const formatRupiah = (amount: number): string => {
+        return "Rp " + amount.toLocaleString("id-ID");
+    };
     const handleViewDetails = () => {
         const currentScrollPosition = window.scrollY;
         sessionStorage.setItem(
@@ -313,13 +316,13 @@ function EnhancedCarCard({ car }: { car: Car }) {
                 <div className="flex items-center justify-between mb-6">
                     <div>
                         <div className="text-3xl font-bold text-transparent bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text">
-                            ${car.rental_price_per_day}
+                            {formatRupiah(parseFloat(car.rental_price_per_day))}
                         </div>
-                        <div className="text-sm text-zinc-400">per day</div>
+                        <div className="text-sm text-zinc-400">per hari</div>
                     </div>
                     <div className="flex items-center gap-1">
                         <User className="h-5 w-5 text-zinc-400" />
-                        <span className="text-zinc-400">{car.seats} Seats</span>
+                        <span className="text-zinc-400">{car.seats} Kursi</span>
                     </div>
                 </div>
 

@@ -20,7 +20,7 @@ class Payment extends Model
     ];
 
     protected $casts = [
-        'amount' => 'decimal:2',
+        'amount' => 'decimal:0',
         'paid_at' => 'datetime',
         'gateway_response' => 'array',
     ];
@@ -29,6 +29,11 @@ class Payment extends Model
     public function booking()
     {
         return $this->belongsTo(Booking::class);
+    }
+
+    public function getFormattedAmountAttribute()
+    {
+        return 'Rp ' . number_format($this->amount, 0, ',', '.');
     }
     
     // Helper methods untuk PaymentResource
@@ -64,6 +69,30 @@ class Payment extends Model
         return $this->payment_status === 'cancelled';
     }
     
+    public function getStatusLabelAttribute()
+    {
+        return match($this->payment_status) {
+            'pending' => 'Menunggu Pembayaran',
+            'paid' => 'Lunas',
+            'failed' => 'Gagal',
+            'refunded' => 'Dikembalikan',
+            'cancelled' => 'Dibatalkan',
+            default => 'Unknown'
+        };
+    }
+
+    public function getPaymentMethodLabelAttribute()
+    {
+        return match($this->payment_method) {
+            'bank_transfer' => 'Transfer Bank',
+            'e_wallet' => 'E-Wallet',
+            'credit_card' => 'Kartu Kredit',
+            'virtual_account' => 'Virtual Account',
+            'qris' => 'QRIS',
+            'cash' => 'Tunai',
+            default => ucfirst(str_replace('_', ' ', $this->payment_method))
+        };
+    }
     // Scopes
     public function scopePaid($query)
     {

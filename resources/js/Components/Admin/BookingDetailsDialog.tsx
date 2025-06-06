@@ -88,13 +88,13 @@ export function BookingDetailsDialog({
                             </p>
                             <p>
                                 <span className="text-zinc-400">Durasi:</span>{" "}
-                                {booking.duration_days} hari
+                                {booking.total_days} hari
                             </p>
                             <p>
                                 <span className="text-zinc-400">
                                     Total Harga:
                                 </span>{" "}
-                                {formatCurrency(booking.total_price)}
+                                {formatCurrency(booking.total_amount)}
                             </p>
                         </div>
                     </div>

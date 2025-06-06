@@ -258,12 +258,12 @@ export default function Navbar() {
                                 </NavItem>
 
                                 <NavItem
-                                    href="/blog"
+                                    href="/bookings"
                                     active={url?.startsWith("blog") ?? false}
-                                    hasDropdown
-                                    onClick={() => openSubmenu("blog")}
+                                    // hasDropdown
+                                    // onClick={() => openSubmenu("blog")}
                                 >
-                                    Blog
+                                    My Booking
                                 </NavItem>
                                 <NavItem
                                     href="/contact"

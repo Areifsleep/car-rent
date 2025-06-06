@@ -22,14 +22,42 @@ class Car extends Model
     ];
 
     protected $casts = [
-        // 'rental_price_per_day' => 'decimal:2',
-        // 'is_available' => 'boolean',
+        'rental_price_per_day' => 'decimal:0', // Rupiah tanpa desimal
+        'is_available' => 'boolean',
         'seats' => 'integer',
-        // 'year' => 'integer',
+        'year' => 'integer',
     ];
 
     public function bookings()
     {
         return $this->hasMany(Booking::class);
     }
+
+    public function getFormattedRentalPriceAttribute()
+    {
+        return 'Rp ' . number_format($this->rental_price_per_day, 0, ',', '.');
+    }
+
+
+    public function getTotalEarningsAttribute()
+    {
+        return $this->bookings()
+                    ->whereHas('payment', function($q) {
+                        $q->where('payment_status', 'paid');
+                    })
+                    ->sum('total_amount');
+    }
+
+    public function getBookingCountAttribute()
+    {
+        return $this->bookings()->where('status', '!=', 'cancelled')->count();
+    }
+
+    public function isCurrentlyBooked()
+    {
+        return $this->bookings()
+                    ->active()
+                    ->exists();
+    }
 }
+

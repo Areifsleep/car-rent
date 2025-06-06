@@ -6,19 +6,18 @@ export interface Booking {
     id: number;
     user_id: number;
     car_id: number;
-    start_date: string; // Format ISO "YYYY-MM-DD"
-    end_date: string; // Format ISO "YYYY-MM-DD"
-    total_price: number;
-    status: "pending" | "confirmed" | "cancelled";
+    start_date: string;
+    end_date: string;
+    total_days: number;
+    daily_rate: string;
+    subtotal: string;
+    tax_amount: string;
+    total_amount: string;
+    status: "pending" | "confirmed" | "active" | "completed" | "cancelled";
+    notes: string | null;
     created_at: string;
     updated_at: string;
-
-    // Relasi
+    car: Car;
     user?: User;
-    car?: Car;
     payment?: Payment;
-
-    duration_days?: number;
-    status_label?: string;
-    can_cancel?: boolean;
 }

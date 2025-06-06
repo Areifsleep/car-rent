@@ -89,7 +89,7 @@ class CarController extends Controller
     return Inertia::render('Cars/Show', [
         'car' => new CarResource($car),
         // 'similarCars' => CarResource::collection($similarCars),
-        // 'isAvailable' => $car->is_available,
+        'isAvailable' => $car->is_available,
         // 'upcomingBookings' => $car->bookings->count(),
     ]);
 }

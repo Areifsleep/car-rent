@@ -33,13 +33,19 @@ Route::get('/cars/{car}', [CarController::class, 'show'])->name('cars.show');
 // });
 
 
-Route::middleware(['auth'])->group(function () {
-    Route::redirect("dashboard", "/");
+Route::middleware('auth')->group(function () {
     Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
     Route::get('/bookings/create/{car}', [BookingController::class, 'create'])->name('bookings.create');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
+    
+    // Payment routes
+    Route::get('/bookings/{booking}/payment', [BookingController::class, 'payment'])->name('booking.payment');
+    Route::post('/bookings/{booking}/payment/process', [BookingController::class, 'processPayment'])->name('booking.payment.process');
+    Route::get('/bookings/{booking}/payment/success', [BookingController::class, 'paymentSuccess'])->name('booking.payment.success');
+    Route::get('/bookings/{booking}/payment/cancel', [BookingController::class, 'paymentCancel'])->name('booking.payment.cancel');
     Route::patch('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
+
 });
 // Route::middleware(['auth'])->group(function () {
 //     Route::get('/dashboard', function () {
@@ -81,3 +87,4 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 require __DIR__ . '/admin.php';
+require __DIR__.'/api.php'; // Uncomment if you have a separate file for webhooks

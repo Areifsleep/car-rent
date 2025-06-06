@@ -8,6 +8,7 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\Payment;
 
 
 
@@ -61,5 +62,26 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class, 'role_id');
     }
+
+    public function payments()
+{
+    return $this->hasManyThrough(Payment::class, Booking::class);
+}
+
+// Helper methods
+public function getTotalSpentAttribute()
+{
+    return $this->payments()->where('payment_status', 'paid')->sum('amount');
+}
+
+public function getActiveBookingsAttribute()
+{
+    return $this->bookings()->active()->count();
+}
+
+public function getPendingPaymentsAttribute()
+{
+    return $this->payments()->where('payment_status', 'pending')->count();
+}
     
 }
