@@ -14,7 +14,15 @@ import {
     Heart,
     ShieldCheck,
     Clock,
+    User,
 } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/Components/ui/dialog";
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent } from "@/Components/ui/card";
 import { Badge } from "@/Components/ui/badge";
@@ -23,21 +31,31 @@ import Navbar from "@/Components/NavBar";
 import ScrollToTop from "@/Components/ScrollToTop";
 import { Car } from "@/types/car";
 import { formatCurrency } from "@/lib/utils";
+import UpcomingBookingsDialog from "@/Components/UpcomingBookingDialog";
 
 interface CarShowProps {
     car: { data: Car };
     isAvailable: boolean;
     upcomingBookings: number;
+    upcomingBookingDetails: Array<{
+        id: number;
+        start_date_formatted: string;
+        end_date_formatted: string;
+        start_date_short: string;
+        end_date_short: string;
+    }>;
 }
 
 export default function CarShowPage({
     car,
     isAvailable,
     upcomingBookings,
+    upcomingBookingDetails,
 }: CarShowProps) {
     const [isLiked, setIsLiked] = useState(false);
     const [selectedImage, setSelectedImage] = useState(car.data.image);
     console.log("Car data:", car);
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     const handleBookNow = () => {
         if (isAvailable) {
@@ -62,13 +80,6 @@ export default function CarShowPage({
             alert("Link copied to clipboard!");
         }
     };
-
-    // Sample images for carousel (you can modify based on your data structure)
-    // const carImages = [
-    //     car.data.image,
-    //     car.data.image, // You might have multiple images in the future
-    //     car.data.image,
-    // ].filter(Boolean);
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-zinc-900 via-zinc-900 to-zinc-800">
@@ -192,11 +203,11 @@ export default function CarShowPage({
                                         <span>{car.data.year}</span>
                                         <span>•</span>
                                         <span>{car.data.license_plate}</span>
-                                        <span>•</span>
-                                        <div className="flex items-center">
+                                        {/* <span>•</span> */}
+                                        {/* <div className="flex items-center">
                                             <Star className="h-4 w-4 text-yellow-400 fill-yellow-400 mr-1" />
                                             <span>4.0 (15 reviews)</span>
-                                        </div>
+                                        </div> */}
                                     </div>
                                     <div className="text-center lg:text-left mb-6">
                                         <div className="text-4xl font-bold text-transparent bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text">
@@ -212,7 +223,6 @@ export default function CarShowPage({
                                         </div>
                                     </div>
                                 </div>
-
                                 {/* Booking Information */}
                                 <div className=" space-y-4">
                                     <h3 className="text-lg font-semibold text-white">
@@ -292,20 +302,13 @@ export default function CarShowPage({
                                     </div>
                                 </div>
 
-                                {upcomingBookings > 0 && (
-                                    <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-                                        <div className="flex items-center text-amber-400">
-                                            <Clock className="h-4 w-4 mr-2" />
-                                            <span className="text-sm">
-                                                This car has {upcomingBookings}{" "}
-                                                upcoming booking
-                                                {upcomingBookings > 1
-                                                    ? "s"
-                                                    : ""}
-                                            </span>
-                                        </div>
-                                    </div>
-                                )}
+                                <UpcomingBookingsDialog
+                                    upcomingBookings={upcomingBookings}
+                                    upcomingBookingDetails={
+                                        upcomingBookingDetails
+                                    }
+                                    variant="default"
+                                />
                             </div>
                         </div>
 
@@ -349,92 +352,9 @@ export default function CarShowPage({
                         </div>
                     </Card>
                 </div>
-                {/* Similar Cars Section - Tetap terpisah */}
-                {/* {similarCars.length > 0 && (
-                    <div className="mt-16">
-                        <h2 className="text-2xl font-bold text-white mb-6">
-                            Similar Cars
-                        </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {similarCars.map((similarCar) => (
-                                <SimilarCarCard
-                                    key={similarCar.id}
-                                    car={similarCar}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                )} */}
-                {/* Similar Cars Section - Tetap terpisah */}
-                {/* {similarCars.length > 0 && (
-                    <div className="mt-16">
-                        <h2 className="text-2xl font-bold text-white mb-6">
-                            Similar Cars
-                        </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {similarCars.map((similarCar) => (
-                                <SimilarCarCard
-                                    key={similarCar.id}
-                                    car={similarCar}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                )} */}
             </div>
 
             <ScrollToTop />
         </div>
     );
 }
-
-// Similar Car Card Component
-// function SimilarCarCard({ car }: { car: Car }) {
-//     return (
-//         <Card className="bg-zinc-800/60 backdrop-blur-sm border-zinc-700 hover:border-zinc-600 transition-all duration-300 hover:shadow-lg group">
-//             <div className="relative overflow-hidden rounded-t-lg">
-//                 <img
-//                     src={car.data.image || "/placeholder-car.data.svg"}
-//                     alt={`${car.data.brand} ${car.data.model}`}
-//                     className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
-//                 />
-//                 <div className="absolute top-3 right-3">
-//                     <Badge
-//                         className={`${
-//                             car.data.is_available
-//                                 ? "bg-green-500/90"
-//                                 : "bg-red-500/90"
-//                         } text-white backdrop-blur-sm`}
-//                     >
-//                         {car.data.is_available ? "Available" : "Unavailable"}
-//                     </Badge>
-//                 </div>
-//             </div>
-
-//             <CardContent className="p-4 text-white">
-//                 <h3 className="font-bold text-white group-hover:text-amber-400 transition-colors">
-//                     {car.data.brand} {car.data.model}
-//                 </h3>
-//                 <p className="text-zinc-400 text-sm mb-3">{car.data.year}</p>
-
-//                 <div className="flex items-center justify-between">
-//                     <div className="text-lg font-bold text-amber-400">
-//                         {formatCurrency(Number(car.data.rental_price_per_day))}
-//                         <span className="text-xs text-zinc-400 font-normal">
-//                             /day
-//                         </span>
-//                     </div>
-//                     <Link href={route("cars.show", car.data.id)}>
-//                         <Button
-//                             size="sm"
-//                             variant="outline"
-//                             className="bg-transparent border-zinc-600 text-white hover:bg-zinc-700"
-//                         >
-//                             View
-//                         </Button>
-//                     </Link>
-//                 </div>
-//             </CardContent>
-//         </Card>
-//     );
-// }

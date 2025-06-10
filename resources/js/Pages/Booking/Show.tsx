@@ -98,13 +98,13 @@ export default function BookingShow({ booking }: BookingShowProps) {
             <div className="container mx-auto px-4 py-8 max-w-4xl">
                 {/* Back Button */}
                 <div className="mb-6">
-                    <Link href={route("home")}>
+                    <Link href={route("bookings.index")}>
                         <Button
                             variant="outline"
                             className="bg-transparent border-zinc-600 text-white hover:bg-zinc-700"
                         >
                             <ArrowLeft className="h-4 w-4 mr-2" />
-                            Kembali ke Beranda
+                            Back
                         </Button>
                     </Link>
                 </div>
@@ -142,7 +142,7 @@ export default function BookingShow({ booking }: BookingShowProps) {
                         <Button
                             onClick={handleContinuePayment}
                             disabled={processing}
-                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-8 py-3"
+                            className="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-8 py-3"
                         >
                             {processing ? (
                                 <div className="flex items-center space-x-2">
@@ -157,10 +157,10 @@ export default function BookingShow({ booking }: BookingShowProps) {
                             )}
                         </Button>
 
-                        <p className="text-xs text-zinc-500 mt-2">
+                        {/* <p className="text-xs text-zinc-500 mt-2">
                             Booking akan dibatalkan otomatis jika tidak dibayar
                             dalam 30 menit
-                        </p>
+                        </p> */}
                     </div>
                 )}
 

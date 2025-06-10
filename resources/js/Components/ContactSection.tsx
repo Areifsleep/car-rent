@@ -9,13 +9,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 
-const quickLinks = [
-    { name: "About", url: "/about" },
-    { name: "Cars", url: "/cars" },
-    { name: "Car Types", url: "/car-types" },
-    { name: "FAQ", url: "/faq" },
-    { name: "Contact", url: "/contact" },
-];
+// const quickLinks = [
+//     { name: "About", url: "/about" },
+//     { name: "Cars", url: "/cars" },
+//     { name: "Car Types", url: "/car-types" },
+//     { name: "FAQ", url: "/faq" },
+//     { name: "Contact", url: "/contact" },
+// ];
 
 export default function ContactSection() {
     return (
@@ -68,7 +68,7 @@ export default function ContactSection() {
                         <Link href="/" className="inline-block mb-6">
                             <span className="text-3xl font-bold">
                                 <span className="text-amber-500">REN</span>
-                                <span className="text-white">AX</span>
+                                <span className="text-white">7AL</span>
                             </span>
                         </Link>
                         <p className="text-zinc-400 mb-6">
@@ -105,7 +105,7 @@ export default function ContactSection() {
                     </div>
 
                     {/* Quick Links */}
-                    <div>
+                    {/* <div>
                         <h3 className="text-white text-xl font-bold mb-6">
                             Quick Links
                         </h3>
@@ -125,10 +125,10 @@ export default function ContactSection() {
                                 </li>
                             ))}
                         </ul>
-                    </div>
+                    </div> */}
 
                     {/* Subscribe */}
-                    <div>
+                    {/* <div>
                         <h3 className="text-white text-xl font-bold mb-6">
                             Subscribe
                         </h3>
@@ -146,7 +146,7 @@ export default function ContactSection() {
                                 <ArrowRight className="h-5 w-5" />
                             </Button>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Footer */}

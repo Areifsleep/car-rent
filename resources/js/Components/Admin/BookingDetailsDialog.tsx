@@ -94,7 +94,7 @@ export function BookingDetailsDialog({
                                 <span className="text-zinc-400">
                                     Total Harga:
                                 </span>{" "}
-                                {formatCurrency(booking.total_amount)}
+                                {formatCurrency(Number(booking.total_amount))}
                             </p>
                         </div>
                     </div>

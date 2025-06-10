@@ -60,15 +60,14 @@ export default function PaymentPage({ booking }: PaymentPageProps) {
             <div className="container mx-auto px-4 py-8 max-w-4xl">
                 {/* Back Button */}
                 <div className="mb-6">
-                    <Link href={route("bookings.create", booking.car?.id || 1)}>
-                        <Button
-                            variant="outline"
-                            className="bg-transparent border-zinc-600 text-white hover:bg-zinc-700"
-                        >
-                            <ArrowLeft className="h-4 w-4 mr-2" />
-                            Back to Booking
-                        </Button>
-                    </Link>
+                    <Button
+                        variant="outline"
+                        className="bg-transparent border-zinc-600 text-white hover:bg-zinc-700"
+                        onClick={() => window.history.back()}
+                    >
+                        <ArrowLeft className="h-4 w-4 mr-2" />
+                        Back
+                    </Button>
                 </div>
 
                 <h1 className="text-3xl font-bold text-white mb-8 text-center">
@@ -298,10 +297,10 @@ export default function PaymentPage({ booking }: PaymentPageProps) {
                                         Sesi pembayaran berakhir dalam 30 menit
                                     </span>
                                 </div>
-                                <p className="text-yellow-300 text-xs mt-1">
+                                {/* <p className="text-yellow-300 text-xs mt-1">
                                     Booking akan dibatalkan otomatis jika tidak
                                     dibayar dalam waktu tersebut
-                                </p>
+                                </p> */}
                             </div>
 
                             {/* Payment Button */}

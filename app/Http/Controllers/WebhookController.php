@@ -45,25 +45,54 @@ class WebhookController extends Controller
         return response('Success', 200);
     }
 
-    private function handleSuccessfulPayment($session)
-    {
+private function handleSuccessfulPayment($session)
+{
+    try {
         $bookingId = $session['metadata']['booking_id'] ?? null;
         
-        if ($bookingId) {
-            $booking = Booking::find($bookingId);
-            if ($booking && $booking->payment) {
-                $booking->payment->update([
-                    'payment_status' => 'paid',
-                    'paid_at' => now(),
-                    'gateway_response' => $session,
-                ]);
-                
-                $booking->update(['status' => 'confirmed']);
-                
-                Log::info("Payment confirmed for booking: {$bookingId}");
-            }
+        if (!$bookingId) {
+            Log::error('No booking_id in session metadata');
+            return;
         }
+
+        $booking = Booking::with(['payment', 'user', 'car'])->find($bookingId);
+        
+        if (!$booking) {
+            Log::error('Booking not found', ['booking_id' => $bookingId]);
+            return;
+        }
+
+        // ✅ Check if already processed (idempotency)
+        if ($booking->payment->payment_status === 'paid') {
+            Log::info('Payment already processed', ['booking_id' => $bookingId]);
+            return;
+        }
+
+        // ✅ Update payment status
+        $booking->payment->update([
+            'payment_status' => 'paid',
+            'paid_at' => now(),
+            'transaction_id' => $session['id'],
+            'gateway_response' => $session,
+        ]);
+        
+        // ✅ Update booking status
+        $booking->update(['status' => 'confirmed']);
+        
+        
+        Log::info('Payment confirmed successfully', [
+            'booking_id' => $bookingId,
+            'session_id' => $session['id']
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Error processing payment', [
+            'error' => $e->getMessage(),
+            'session_id' => $session['id'] ?? 'unknown',
+            'booking_id' => $bookingId ?? 'unknown',
+        ]);
     }
+}
 
     private function handleExpiredPayment($session)
     {

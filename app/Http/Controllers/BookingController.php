@@ -44,7 +44,21 @@ class BookingController extends Controller
         
         return Inertia::render('Booking/Create', [
             'car' => $car,
-            'unavailableDates' => $unavailableDates, // Assuming you have a constant for tax rate
+            
+            'upcomingBookings' => $car->bookings->count(),
+            'upcomingBookingDetails' => $car->bookings->map(function($booking) {
+                return [
+                    'id' => $booking->id,
+                    'start_date_formatted' => $booking->start_date->format('d M Y'),
+                    'end_date_formatted' => $booking->end_date->format('d M Y'),
+                    'start_date_short' => $booking->start_date->format('M j'),
+                    'end_date_short' => $booking->end_date->format('M j'),
+                ];
+            }),
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+            ],
         ]);
     }
     
@@ -75,7 +89,7 @@ class BookingController extends Controller
             ->exists();
         
         if ($conflictingBookings) {
-            return back()->withErrors(['dates' => 'Selected dates are not available.']);
+            return back()->withErrors(['dates' => 'Selected dates are not available.'])->withInput();
         }
         
         // Calculate pricing - SNAPSHOT saat booking
@@ -307,50 +321,19 @@ public function processPayment(Request $request, Booking $booking)
     }
 }
 
-    public function paymentSuccess(Request $request, Booking $booking)
-    {
-        $sessionId = $request->get('session_id');
-        
-        if (!$sessionId) {
-            return redirect()->route('booking.payment', $booking->id)
-                ->with('error', 'Invalid payment session.');
-        }
-
-        try {
-            Stripe::setApiKey(config('stripe.secret'));
-            
-            // Retrieve the session to verify payment
-            $session = Session::retrieve($sessionId);
-            
-            if ($session->payment_status === 'paid') {
-                // Update payment status
-                $booking->payment->update([
-                    'payment_status' => 'paid',
-                    'paid_at' => now(),
-                    'gateway_response' => [
-                        'stripe_session_id' => $sessionId,
-                        'payment_intent_id' => $session->payment_intent,
-                        'payment_status' => $session->payment_status,
-                    ],
-                ]);
-
-                // Update booking status to confirmed
-                $booking->update(['status' => 'confirmed']);
-
-                return redirect()->route('bookings.show', $booking->id)
-                    ->with('success', 'Payment successful! Your booking is confirmed.');
-            } else {
-                return redirect()->route('booking.payment', $booking->id)
-                    ->with('error', 'Payment was not successful. Please try again.');
-            }
-
-        } catch (\Exception $e) {
-            Log::error('Payment verification failed: ' . $e->getMessage());
-            
-            return redirect()->route('booking.payment', $booking->id)
-                ->with('error', 'Payment verification failed. Please contact support.');
-        }
+public function paymentSuccess(Request $request, Booking $booking)
+{
+    $sessionId = $request->get('session_id');
+    
+    if (!$sessionId) {
+        return redirect()->route('booking.payment', $booking->id)
+            ->with('error', 'Invalid payment session.');
     }
+
+    
+    return redirect()->route('bookings.show', $booking->id)
+        ->with('success', 'Payment submitted! Please wait for confirmation.');
+}
 
     public function paymentCancel(Booking $booking)
     {
@@ -371,16 +354,36 @@ public function processPayment(Request $request, Booking $booking)
         ]);
     }
     
-    public function index()
+    public function index(Request $request)
     {
-        $bookings = Auth::user()->bookings()
-            ->with('car', 'payment')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-        
+        $query = Auth::user()->bookings()
+            ->with(['car', 'payment'])
+            ->orderBy('created_at', 'desc');
+    
+        // Add search filter
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->whereHas('car', function ($q) use ($search) {
+                $q->where('brand', 'like', "%{$search}%")
+                  ->orWhere('model', 'like', "%{$search}%")
+                  ->orWhere('license_plate', 'like', "%{$search}%");
+            });
+        }
+    
+        // Add status filter
+        if ($request->filled('status') && $request->input('status') !== 'all') {
+            $query->where('status', $request->input('status'));
+        }
+    
+        // Paginate with proper meta data
+        $bookings = $query->paginate(10)->withQueryString();
+    
         return Inertia::render('Booking/Index', [
             'bookings' => $bookings,
-            
+            'filters' => [
+                'search' => $request->input('search'),
+                'status' => $request->input('status', 'all'),
+            ],
         ]);
     }
     

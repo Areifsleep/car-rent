@@ -79,16 +79,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             href: "/admin/bookings",
             icon: Calendar,
         },
-        {
-            name: "Manajemen Pembayaran",
-            href: "/admin/payments",
-            icon: CreditCard,
-        },
-        {
-            name: "Role & User Management",
-            href: "/admin/users",
-            icon: Users,
-        },
+        // {
+        //     name: "Manajemen Pembayaran",
+        //     href: "/admin/payments",
+        //     icon: CreditCard,
+        // },
+        // {
+        //     name: "Role & User Management",
+        //     href: "/admin/users",
+        //     icon: Users,
+        // },
     ];
 
     return (

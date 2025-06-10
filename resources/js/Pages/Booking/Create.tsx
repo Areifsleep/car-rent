@@ -1,31 +1,57 @@
 // Pages/Booking/Create.tsx - Updated version
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, router } from "@inertiajs/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
+import UpcomingBookingsDialog from "@/Components/UpcomingBookingDialog";
 import { Textarea } from "@/Components/ui/textarea";
-import { ArrowLeft, CreditCard } from "lucide-react";
+import {
+    ArrowLeft,
+    CreditCard,
+    Clock,
+    Calendar,
+    X,
+    AlertTriangle,
+} from "lucide-react";
 import { Link } from "@inertiajs/react";
 import Navbar from "@/Components/NavBar";
 import { Car } from "@/types/car";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/Components/ui/dialog";
 
 interface BookingCreateProps {
     car: Car;
     unavailableDates: string[];
+    upcomingBookings: number;
+    upcomingBookingDetails: Array<{
+        id: number;
+        start_date_formatted: string;
+        end_date_formatted: string;
+        start_date_short: string;
+        end_date_short: string;
+    }>;
 }
 
 export default function BookingCreate({
     car,
-    unavailableDates,
+    upcomingBookingDetails,
+    upcomingBookings,
 }: BookingCreateProps) {
     const [totalDays, setTotalDays] = useState(0);
     const [subtotal, setSubtotal] = useState(0);
     const [taxAmount, setTaxAmount] = useState(0);
     const [totalAmount, setTotalAmount] = useState(0);
+    const [hasConflict, setHasConflict] = useState(false);
+    const [conflictingBookings, setConflictingBookings] = useState<any[]>([]);
 
     const { data, setData, post, processing, errors } = useForm({
         car_id: car.id,
@@ -38,20 +64,62 @@ export default function BookingCreate({
         return "Rp " + amount.toLocaleString("id-ID");
     };
 
+    const checkDateConflicts = (startDate: string, endDate: string) => {
+        if (!startDate || !endDate) {
+            setHasConflict(false);
+            setConflictingBookings([]);
+            return false;
+        }
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        const conflicts = upcomingBookingDetails.filter((booking) => {
+            const bookingStart = new Date(
+                booking.start_date_formatted.split(" ").reverse().join("-")
+            );
+            const bookingEnd = new Date(
+                booking.end_date_formatted.split(" ").reverse().join("-")
+            );
+            return start <= bookingEnd && end >= bookingStart;
+        });
+
+        setHasConflict(conflicts.length > 0);
+        setConflictingBookings(conflicts);
+        return conflicts.length > 0;
+    };
+
     const calculateTotal = (startDate: string, endDate: string) => {
         if (startDate && endDate) {
             const start = new Date(startDate);
             const end = new Date(endDate);
 
             if (end > start) {
+                // Check for conflicts first
+                const hasConflicts = checkDateConflicts(startDate, endDate);
+
+                if (hasConflicts) {
+                    // Reset calculations if there's a conflict
+                    setTotalDays(0);
+                    setSubtotal(0);
+                    setTaxAmount(0);
+                    setTotalAmount(0);
+                    return;
+                }
+
+                // Calculate if no conflicts
                 const diffTime = Math.abs(end.getTime() - start.getTime());
                 const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-                const dailyRate = parseFloat(
-                    car.rental_price_per_day.toString()
-                );
+                const dailyRate =
+                    typeof car.rental_price_per_day === "string"
+                        ? parseFloat(
+                              car.rental_price_per_day.replace(/[^0-9.-]+/g, "")
+                          )
+                        : car.rental_price_per_day;
+
                 const sub = dailyRate * days;
-                const tax = Math.round(sub * 0.12); // PPN 12%
+                const tax = Math.round(sub * 0.12);
                 const total = sub + tax;
 
                 setTotalDays(days);
@@ -70,17 +138,17 @@ export default function BookingCreate({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Submit akan create booking dan redirect ke payment page
-        post(route("bookings.store"), {
-            onSuccess: (page) => {
-                // BookingController akan redirect ke payment page
-                console.log("Booking created, redirecting to payment...");
-            },
-            onError: (errors) => {
-                console.log("Booking creation failed:", errors);
-            },
-        });
+        // Final check before submission
+        if (hasConflict || totalDays === 0) {
+            return; // Silently prevent submission
+        }
+
+        post(route("bookings.store"));
     };
+
+    // Can proceed only if no conflicts and valid calculation
+    const canProceed =
+        data.start_date && data.end_date && totalDays > 0 && !hasConflict;
 
     const today = new Date().toISOString().split("T")[0];
 
@@ -90,10 +158,6 @@ export default function BookingCreate({
         date.setDate(date.getDate() + 1);
         return date.toISOString().split("T")[0];
     };
-
-    // Validation: Can't proceed without dates
-    const canProceed = data.start_date && data.end_date && totalDays > 0;
-
     return (
         <div className="min-h-screen bg-gradient-to-b from-zinc-900 via-zinc-900 to-zinc-800">
             <Navbar />
@@ -101,15 +165,20 @@ export default function BookingCreate({
             <div className="container mx-auto px-4 py-8 max-w-6xl">
                 {/* Back Button */}
                 <div className="mb-6">
-                    <Link href={route("home")}>
-                        <Button
-                            variant="outline"
-                            className="bg-transparent border-zinc-600 text-white hover:bg-zinc-700"
-                        >
-                            <ArrowLeft className="h-4 w-4 mr-2" />
-                            Back to Cars
-                        </Button>
-                    </Link>
+                    <Button
+                        onClick={() => {
+                            if (window.history.length > 1) {
+                                window.history.back();
+                            } else {
+                                router.visit(route("cars.index"));
+                            }
+                        }}
+                        variant="outline"
+                        className="bg-transparent border-zinc-600 text-white hover:bg-zinc-700"
+                    >
+                        <ArrowLeft className="h-4 w-4 mr-2" />
+                        Back
+                    </Button>
                 </div>
 
                 <h1 className="text-3xl font-bold text-white mb-8 text-center">
@@ -117,7 +186,7 @@ export default function BookingCreate({
                 </h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Car Info - Same as before */}
+                    {/* Car Info Card */}
                     <Card className="bg-zinc-800/60 backdrop-blur-sm border-zinc-700">
                         <CardHeader>
                             <CardTitle className="text-white text-xl">
@@ -126,7 +195,6 @@ export default function BookingCreate({
                             <p className="text-zinc-400">{car.year}</p>
                         </CardHeader>
                         <CardContent>
-                            {/* Car details same as before */}
                             <div className="relative mb-6">
                                 <img
                                     src={car.image || "/placeholder-car.svg"}
@@ -157,7 +225,15 @@ export default function BookingCreate({
                                     <span>Daily Rate:</span>
                                     <span className="font-bold text-amber-400">
                                         {formatRupiah(
-                                            parseFloat(car.rental_price_per_day)
+                                            typeof car.rental_price_per_day ===
+                                                "string"
+                                                ? parseFloat(
+                                                      car.rental_price_per_day.replace(
+                                                          /[^0-9.-]+/g,
+                                                          ""
+                                                      )
+                                                  )
+                                                : car.rental_price_per_day
                                         )}
                                     </span>
                                 </div>
@@ -182,13 +258,15 @@ export default function BookingCreate({
                             <CardTitle className="text-white text-xl">
                                 Booking Details
                             </CardTitle>
-                            <p className="text-zinc-400">
-                                Select your rental dates
-                            </p>
+                            <UpcomingBookingsDialog
+                                upcomingBookings={upcomingBookings}
+                                upcomingBookingDetails={upcomingBookingDetails}
+                                variant="default"
+                            />
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-6">
-                                {/* Date Range - In One Row */}
+                                {/* Date Range */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {/* Start Date */}
                                     <div>
@@ -201,7 +279,13 @@ export default function BookingCreate({
                                         <Input
                                             type="date"
                                             id="start_date"
-                                            className="mt-1 bg-zinc-700 border-zinc-600 text-white focus:border-amber-500 focus:ring-amber-500"
+                                            className={`mt-1 bg-zinc-700 border-zinc-600 text-white focus:border-amber-500 focus:ring-amber-500 ${
+                                                hasConflict &&
+                                                data.start_date &&
+                                                data.end_date
+                                                    ? "border-red-500 ring-red-500"
+                                                    : ""
+                                            }`}
                                             value={data.start_date}
                                             min={today}
                                             onChange={(e) => {
@@ -233,7 +317,13 @@ export default function BookingCreate({
                                         <Input
                                             type="date"
                                             id="end_date"
-                                            className="mt-1 bg-zinc-700 border-zinc-600 text-white focus:border-amber-500 focus:ring-amber-500"
+                                            className={`mt-1 bg-zinc-700 border-zinc-600 text-white focus:border-amber-500 focus:ring-amber-500 ${
+                                                hasConflict &&
+                                                data.start_date &&
+                                                data.end_date
+                                                    ? "border-red-500 ring-red-500"
+                                                    : ""
+                                            }`}
                                             value={data.end_date}
                                             min={getTomorrowDate(
                                                 data.start_date
@@ -257,6 +347,87 @@ export default function BookingCreate({
                                     </div>
                                 </div>
 
+                                {/* Conflict Warning */}
+                                {hasConflict &&
+                                    data.start_date &&
+                                    data.end_date && (
+                                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+                                            <div className="flex items-start space-x-3">
+                                                <AlertTriangle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+                                                <div className="flex-1">
+                                                    <h4 className="text-red-400 font-medium mb-2">
+                                                        Date Conflict Detected
+                                                    </h4>
+                                                    <p className="text-red-300 text-sm mb-3">
+                                                        Selected dates overlap
+                                                        with existing bookings.
+                                                        Please choose different
+                                                        dates.
+                                                    </p>
+
+                                                    {/* Show conflicting bookings */}
+                                                    {conflictingBookings.length >
+                                                        0 && (
+                                                        <div className="space-y-2">
+                                                            <p className="text-red-200 text-xs font-medium">
+                                                                Conflicting
+                                                                bookings:
+                                                            </p>
+                                                            {conflictingBookings.map(
+                                                                (booking) => (
+                                                                    <div
+                                                                        key={
+                                                                            booking.id
+                                                                        }
+                                                                        className="text-red-200 text-xs bg-red-500/20 rounded px-2 py-1"
+                                                                    >
+                                                                        {
+                                                                            booking.start_date_formatted
+                                                                        }{" "}
+                                                                        -{" "}
+                                                                        {
+                                                                            booking.end_date_formatted
+                                                                        }
+                                                                    </div>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    )}
+
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            setData(
+                                                                "start_date",
+                                                                ""
+                                                            );
+                                                            setData(
+                                                                "end_date",
+                                                                ""
+                                                            );
+                                                            setHasConflict(
+                                                                false
+                                                            );
+                                                            setConflictingBookings(
+                                                                []
+                                                            );
+                                                            setTotalDays(0);
+                                                            setSubtotal(0);
+                                                            setTaxAmount(0);
+                                                            setTotalAmount(0);
+                                                        }}
+                                                        className="mt-3 bg-red-600 hover:bg-red-700 text-white border-red-600"
+                                                    >
+                                                        <X className="h-4 w-4 mr-1" />
+                                                        Clear Dates
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
                                 {/* Notes */}
                                 <div>
                                     <Label
@@ -275,15 +446,10 @@ export default function BookingCreate({
                                             setData("notes", e.target.value)
                                         }
                                     />
-                                    {errors.notes && (
-                                        <p className="text-red-400 text-sm mt-1">
-                                            {errors.notes}
-                                        </p>
-                                    )}
                                 </div>
 
-                                {/* Booking Summary */}
-                                {totalDays > 0 && (
+                                {/* Booking Summary - Only show if valid dates and no conflicts */}
+                                {totalDays > 0 && !hasConflict && (
                                     <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 p-4 rounded-lg">
                                         <h3 className="text-white font-semibold mb-3">
                                             Ringkasan Booking
@@ -292,19 +458,22 @@ export default function BookingCreate({
                                             <div className="flex justify-between">
                                                 <span>Periode Sewa:</span>
                                                 <span className="font-medium">
-                                                    {totalDays}{" "}
-                                                    {totalDays === 1
-                                                        ? "hari"
-                                                        : "hari"}
+                                                    {totalDays} hari
                                                 </span>
                                             </div>
                                             <div className="flex justify-between">
                                                 <span>Tarif Harian:</span>
                                                 <span className="font-medium">
                                                     {formatRupiah(
-                                                        parseFloat(
-                                                            car.rental_price_per_day
-                                                        )
+                                                        typeof car.rental_price_per_day ===
+                                                            "string"
+                                                            ? parseFloat(
+                                                                  car.rental_price_per_day.replace(
+                                                                      /[^0-9.-]+/g,
+                                                                      ""
+                                                                  )
+                                                              )
+                                                            : car.rental_price_per_day
                                                     )}
                                                 </span>
                                             </div>
@@ -333,11 +502,17 @@ export default function BookingCreate({
                                     </div>
                                 )}
 
-                                {/* Submit Button - Updated */}
+                                {/* Submit Button */}
                                 <Button
                                     type="submit"
-                                    disabled={processing || !canProceed}
-                                    className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold h-12"
+                                    disabled={
+                                        processing ||
+                                        !data.start_date ||
+                                        !data.end_date ||
+                                        totalDays === 0 ||
+                                        hasConflict
+                                    }
+                                    className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold h-12 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {processing ? (
                                         <div className="flex items-center space-x-2">
@@ -348,24 +523,28 @@ export default function BookingCreate({
                                         <div className="flex items-center space-x-2">
                                             <CreditCard className="h-5 w-5" />
                                             <span>
-                                                {canProceed
-                                                    ? `Proceed to Payment ${formatRupiah(
+                                                {hasConflict
+                                                    ? "Resolve Date Conflicts First"
+                                                    : !data.start_date ||
+                                                      !data.end_date
+                                                    ? "Select Dates to Continue"
+                                                    : totalDays === 0
+                                                    ? "Select Valid Date Range"
+                                                    : `Proceed to Payment ${formatRupiah(
                                                           totalAmount
-                                                      )}`
-                                                    : "Select Dates to Continue"}
+                                                      )}`}
                                             </span>
                                         </div>
                                     )}
                                 </Button>
 
-                                {!canProceed &&
-                                    data.start_date &&
-                                    data.end_date && (
-                                        <p className="text-red-400 text-sm text-center">
-                                            Tanggal kembali harus setelah
-                                            tanggal ambil
-                                        </p>
-                                    )}
+                                {/* Help text */}
+                                {hasConflict && (
+                                    <p className="text-red-400 text-sm text-center">
+                                        Please select different dates to
+                                        continue with your booking.
+                                    </p>
+                                )}
                             </form>
                         </CardContent>
                     </Card>

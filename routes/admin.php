@@ -24,9 +24,9 @@ Route::middleware(['auth', "role:admin"])->prefix('admin')->group(function () {
     // Route::get('/bookings', function () {
     //     return Inertia::render('Admin/Bookings');
     // })->name('admin.bookings');
-    Route::get('/payments', function () {
-        return Inertia::render('Admin/Payments');
-    })->name('admin.payments');
+    // Route::get('/payments', function () {
+    //     return Inertia::render('Admin/Payments');
+    // })->name('admin.payments');
 });
 
 Route::middleware(["auth","verified","role:admin"])->group(function () {

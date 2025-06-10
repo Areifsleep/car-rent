@@ -7,6 +7,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\WebhookController;
 
 
 
@@ -47,6 +48,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
 
 });
+
+
 // Route::middleware(['auth'])->group(function () {
 //     Route::get('/dashboard', function () {
 //         return Inertia::render('Dashboard');

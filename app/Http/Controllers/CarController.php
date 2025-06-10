@@ -80,17 +80,21 @@ class CarController extends Controller
     }]);
     
     // Get similar cars (same brand, different model)
-    $similarCars = Car::where('is_available', true)
-                      ->where('brand', $car->brand)
-                      ->where('id', '!=', $car->id)
-                      ->limit(4)
-                      ->get();
+   
     
     return Inertia::render('Cars/Show', [
         'car' => new CarResource($car),
-        // 'similarCars' => CarResource::collection($similarCars),
         'isAvailable' => $car->is_available,
-        // 'upcomingBookings' => $car->bookings->count(),
+        'upcomingBookings' => $car->bookings->count(),
+        'upcomingBookingDetails' => $car->bookings->map(function($booking) {
+            return [
+                'id' => $booking->id,
+                'start_date_formatted' => $booking->start_date->format('d M Y'),
+                'end_date_formatted' => $booking->end_date->format('d M Y'),
+                'start_date_short' => $booking->start_date->format('M j'),
+                'end_date_short' => $booking->end_date->format('M j'),
+            ];
+        }),
     ]);
 }
 }

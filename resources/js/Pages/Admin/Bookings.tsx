@@ -295,7 +295,9 @@ export default function AdminBookingsPage({
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-amber-500 font-medium">
-                                        {formatCurrency(booking.total_amount)}
+                                        {formatCurrency(
+                                            Number(booking.total_amount)
+                                        )}
                                     </TableCell>
                                     <TableCell>
                                         <StatusBadge status={booking.status} />

@@ -16,12 +16,13 @@ import {
     CreditCard,
     Search,
     Filter,
-    ChevronLeft,
-    ChevronRight,
+    Eye,
+    X,
 } from "lucide-react";
 import { Link, router } from "@inertiajs/react";
 import Navbar from "@/Components/NavBar";
 import { Booking } from "@/types/booking";
+import Pagination from "@/Components/Admin/Pagination"; // Import pagination
 
 interface BookingIndexProps {
     bookings: {
@@ -30,12 +31,21 @@ interface BookingIndexProps {
         last_page: number;
         per_page: number;
         total: number;
+        from: number | null;
+        to: number | null;
+        links: Array<{
+            url: string | null;
+            label: string;
+            active: boolean;
+        }>;
+        path: string;
     };
 }
 
 export default function BookingIndex({ bookings }: BookingIndexProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
+    const [processing, setProcessing] = useState<number | null>(null);
 
     const formatRupiah = (amount: number): string => {
         return "Rp " + amount.toLocaleString("id-ID");
@@ -73,7 +83,7 @@ export default function BookingIndex({ bookings }: BookingIndexProps) {
                 label: "Dibatalkan",
                 icon: AlertCircle,
             },
-        } as const;
+        };
 
         const config =
             statusConfig[status as keyof typeof statusConfig] ||
@@ -94,6 +104,61 @@ export default function BookingIndex({ bookings }: BookingIndexProps) {
         router.visit(route("booking.payment", bookingId));
     };
 
+    const handleCancelBooking = async (bookingId: number) => {
+        if (
+            !confirm(
+                "Are you sure you want to cancel this booking? This action cannot be undone."
+            )
+        ) {
+            return;
+        }
+
+        setProcessing(bookingId);
+
+        try {
+            await new Promise<void>((resolve, reject) => {
+                router.patch(
+                    route("bookings.cancel", bookingId),
+                    {},
+                    {
+                        onSuccess: () => {
+                            resolve();
+                        },
+                        onError: (errors) => {
+                            console.error("Cancellation failed:", errors);
+                            alert(
+                                "Failed to cancel booking. Please try again."
+                            );
+                            reject(new Error("Cancellation failed"));
+                        },
+                        onFinish: () => {
+                            setProcessing(null);
+                        },
+                    }
+                );
+            });
+        } catch (error) {
+            console.error("Cancel booking error:", error);
+        }
+    };
+
+    // ✅ Add pagination handler
+    const handlePageChange = (page: number) => {
+        router.get(
+            route("bookings.index"),
+            {
+                page: page,
+                search: searchTerm || undefined,
+                status: statusFilter !== "all" ? statusFilter : undefined,
+            },
+            {
+                preserveState: true,
+                preserveScroll: false,
+            }
+        );
+    };
+
+    // Filter bookings (client-side for current page only)
     const filteredBookings = bookings.data.filter((booking) => {
         const matchesSearch =
             booking.car?.brand
@@ -370,57 +435,83 @@ export default function BookingIndex({ bookings }: BookingIndexProps) {
                                             )}
                                         </div>
 
-                                        {/* Actions */}
-                                        <div className="lg:w-48 flex flex-col space-y-3">
-                                            {/* View Details Button */}
-                                            <Link
-                                                href={route(
-                                                    "bookings.show",
-                                                    booking.id
-                                                )}
-                                            >
-                                                <Button
-                                                    variant="outline"
-                                                    className="w-full bg-transparent border-zinc-600 text-white hover:bg-zinc-700"
-                                                >
-                                                    View Details
-                                                </Button>
-                                            </Link>
-
-                                            {/* Continue Payment Button */}
-                                            {booking.status === "pending" &&
-                                                booking.payment
-                                                    ?.payment_status ===
-                                                    "pending" && (
+                                        {/* Actions - Grid Layout */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-zinc-700 lg:border-t-0 lg:pt-0 lg:w-48 lg:flex lg:flex-col">
+                                            {/* Left Side - Cancel (if pending) */}
+                                            <div className="flex justify-start lg:justify-center">
+                                                {(booking.status ===
+                                                    "pending" ||
+                                                    booking.status ===
+                                                        "confirmed") && (
                                                     <Button
+                                                        variant="outline"
+                                                        size="sm"
                                                         onClick={() =>
-                                                            handleContinuePayment(
+                                                            handleCancelBooking(
                                                                 booking.id
                                                             )
                                                         }
-                                                        className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white"
+                                                        disabled={
+                                                            processing ===
+                                                            booking.id
+                                                        }
+                                                        className="w-full sm:w-auto bg-transparent border-red-600 text-red-400 hover:bg-red-600 hover:text-white disabled:opacity-50"
                                                     >
-                                                        <CreditCard className="h-4 w-4 mr-2" />
-                                                        Continue Payment
+                                                        {processing ===
+                                                        booking.id ? (
+                                                            <>
+                                                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent mr-2"></div>
+                                                                Cancelling...
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <X className="h-4 w-4 mr-2" />
+                                                                Cancel
+                                                            </>
+                                                        )}
                                                     </Button>
                                                 )}
+                                            </div>
 
-                                            {/* Status-specific actions */}
-                                            {booking.status === "confirmed" && (
-                                                <div className="text-center">
-                                                    <p className="text-xs text-green-400 font-medium">
-                                                        Ready for pickup!
-                                                    </p>
-                                                </div>
-                                            )}
+                                            {/* Center - View Details */}
+                                            <div className="flex justify-center">
+                                                <Link
+                                                    href={route(
+                                                        "bookings.show",
+                                                        booking.id
+                                                    )}
+                                                >
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="w-full sm:w-auto bg-transparent border-zinc-600 text-white hover:bg-zinc-700 font-medium"
+                                                    >
+                                                        <Eye className="h-4 w-4 mr-2" />
+                                                        View Details
+                                                    </Button>
+                                                </Link>
+                                            </div>
 
-                                            {booking.status === "active" && (
-                                                <div className="text-center">
-                                                    <p className="text-xs text-blue-400 font-medium">
-                                                        Rental in progress
-                                                    </p>
-                                                </div>
-                                            )}
+                                            {/* Right Side - Continue Payment (if pending) */}
+                                            <div className="flex justify-end lg:justify-center">
+                                                {booking.status === "pending" &&
+                                                    booking.payment
+                                                        ?.payment_status ===
+                                                        "pending" && (
+                                                        <Button
+                                                            onClick={() =>
+                                                                handleContinuePayment(
+                                                                    booking.id
+                                                                )
+                                                            }
+                                                            size="sm"
+                                                            className="w-full sm:w-auto bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white"
+                                                        >
+                                                            <CreditCard className="h-4 w-4 mr-2" />
+                                                            Continue Payment
+                                                        </Button>
+                                                    )}
+                                            </div>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -429,160 +520,23 @@ export default function BookingIndex({ bookings }: BookingIndexProps) {
                     </div>
                 )}
 
-                {/* Pagination */}
+                {/* ✅ Add Pagination Component */}
                 {bookings.last_page > 1 && (
-                    <Card className="bg-zinc-800/60 backdrop-blur-sm border-zinc-700 mt-6">
-                        <CardContent className="p-4">
-                            <div className="flex items-center justify-between">
-                                <div className="text-sm text-zinc-400">
-                                    Showing{" "}
-                                    {(bookings.current_page - 1) *
-                                        bookings.per_page +
-                                        1}{" "}
-                                    to{" "}
-                                    {Math.min(
-                                        bookings.current_page *
-                                            bookings.per_page,
-                                        bookings.total
-                                    )}{" "}
-                                    of {bookings.total} results
-                                </div>
-
-                                <div className="flex items-center space-x-2">
-                                    {bookings.current_page > 1 && (
-                                        <Link
-                                            href={route("bookings.index", {
-                                                page: bookings.current_page - 1,
-                                            })}
-                                        >
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="bg-transparent border-zinc-600 text-white hover:bg-zinc-700"
-                                            >
-                                                <ChevronLeft className="h-4 w-4 mr-1" />
-                                                Previous
-                                            </Button>
-                                        </Link>
-                                    )}
-
-                                    <div className="flex items-center space-x-1">
-                                        {Array.from(
-                                            {
-                                                length: Math.min(
-                                                    5,
-                                                    bookings.last_page
-                                                ),
-                                            },
-                                            (_, i) => {
-                                                const pageNum = Math.max(
-                                                    1,
-                                                    Math.min(
-                                                        bookings.current_page -
-                                                            2 +
-                                                            i,
-                                                        bookings.last_page -
-                                                            4 +
-                                                            i
-                                                    )
-                                                );
-
-                                                if (
-                                                    pageNum > bookings.last_page
-                                                )
-                                                    return null;
-
-                                                return (
-                                                    <Link
-                                                        key={pageNum}
-                                                        href={route(
-                                                            "bookings.index",
-                                                            { page: pageNum }
-                                                        )}
-                                                    >
-                                                        <Button
-                                                            variant={
-                                                                pageNum ===
-                                                                bookings.current_page
-                                                                    ? "default"
-                                                                    : "outline"
-                                                            }
-                                                            size="sm"
-                                                            className={
-                                                                pageNum ===
-                                                                bookings.current_page
-                                                                    ? "bg-amber-600 hover:bg-amber-700 text-white"
-                                                                    : "bg-transparent border-zinc-600 text-white hover:bg-zinc-700"
-                                                            }
-                                                        >
-                                                            {pageNum}
-                                                        </Button>
-                                                    </Link>
-                                                );
-                                            }
-                                        )}
-                                    </div>
-
-                                    {bookings.current_page <
-                                        bookings.last_page && (
-                                        <Link
-                                            href={route("bookings.index", {
-                                                page: bookings.current_page + 1,
-                                            })}
-                                        >
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="bg-transparent border-zinc-600 text-white hover:bg-zinc-700"
-                                            >
-                                                Next
-                                                <ChevronRight className="h-4 w-4 ml-1" />
-                                            </Button>
-                                        </Link>
-                                    )}
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {/* Empty State */}
-                {bookings.data.length === 0 && (
-                    <Card className="bg-zinc-800/60 backdrop-blur-sm border-zinc-700">
-                        <CardContent className="p-12 text-center">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-zinc-700/50 rounded-full mb-4">
-                                <CarIcon className="h-8 w-8 text-zinc-400" />
-                            </div>
-                            <h3 className="text-xl font-semibold text-white mb-2">
-                                No Bookings Found
-                            </h3>
-                            <p className="text-zinc-400 mb-6">
-                                {searchTerm || statusFilter !== "all"
-                                    ? "No bookings match your current filters."
-                                    : "You haven't made any car rental bookings yet."}
-                            </p>
-                            <div className="space-y-3">
-                                {(searchTerm || statusFilter !== "all") && (
-                                    <Button
-                                        onClick={() => {
-                                            setSearchTerm("");
-                                            setStatusFilter("all");
-                                            router.get(route("bookings.index"));
-                                        }}
-                                        variant="outline"
-                                        className="bg-transparent border-zinc-600 text-white hover:bg-zinc-700"
-                                    >
-                                        Clear Filters
-                                    </Button>
-                                )}
-                                <Link href={route("home")}>
-                                    <Button className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700">
-                                        Browse Cars
-                                    </Button>
-                                </Link>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <div className="mt-8">
+                        <Pagination
+                            meta={{
+                                current_page: bookings.current_page,
+                                from: bookings.from,
+                                last_page: bookings.last_page,
+                                links: bookings.links,
+                                path: bookings.path,
+                                per_page: bookings.per_page,
+                                to: bookings.to,
+                                total: bookings.total,
+                            }}
+                            onPageChange={handlePageChange}
+                        />
+                    </div>
                 )}
             </div>
         </div>

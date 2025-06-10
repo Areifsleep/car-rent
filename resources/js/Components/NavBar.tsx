@@ -231,13 +231,13 @@ export default function Navbar() {
                                 <NavItem href="/" active={url === "home"}>
                                     Home
                                 </NavItem>
-                                <NavItem
+                                {/* <NavItem
                                     href="/about"
                                     active={url?.startsWith("about") ?? false}
                                 >
                                     About
-                                </NavItem>
-                                <NavItem
+                                </NavItem> */}
+                                {/* <NavItem
                                     href="/services"
                                     active={
                                         url?.startsWith("services") ?? false
@@ -248,7 +248,7 @@ export default function Navbar() {
                                     }
                                 >
                                     Services
-                                </NavItem>
+                                </NavItem> */}
                                 <NavItem
                                     href="/cars"
                                     active={url?.startsWith("cars") ?? false}
@@ -259,19 +259,19 @@ export default function Navbar() {
 
                                 <NavItem
                                     href="/bookings"
-                                    active={url?.startsWith("blog") ?? false}
+                                    active={url?.startsWith("booking") ?? false}
                                     // hasDropdown
                                     // onClick={() => openSubmenu("blog")}
                                 >
-                                    My Booking
+                                    Bookings
                                 </NavItem>
-                                <NavItem
+                                {/* <NavItem
                                     href="/contact"
                                     active={url?.startsWith("contact") ?? false}
                                 >
                                     Contact
-                                </NavItem>
-                                {isMobile && (
+                                </NavItem> */}
+                                {/* {isMobile && (
                                     <li className="mt-auto pb-6">
                                         <Link
                                             href="/cart"
@@ -281,7 +281,7 @@ export default function Navbar() {
                                             <span>Cart</span>
                                         </Link>
                                     </li>
-                                )}
+                                )} */}
                             </ul>
                         )}
                     </nav>
@@ -289,12 +289,12 @@ export default function Navbar() {
                     {/* Right side actions */}
                     <div className="hidden md:flex items-center gap-4 lg:gap-6">
                         {/* Cart */}
-                        <Link
+                        {/* <Link
                             href="/cart"
                             className="text-white hover:text-amber-500"
                         >
                             <ShoppingCart className="h-5 w-5" />
-                        </Link>
+                        </Link> */}
 
                         {/* Divider */}
                         <div className="h-6 w-px bg-zinc-600"></div>

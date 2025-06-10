@@ -9,7 +9,7 @@ import ScrollToTop from "@/Components/ScrollToTop";
 import { Button } from "@/Components/ui/button";
 import { Link } from "@inertiajs/react";
 
-export default function Home() {
+export default function Welcome() {
     return (
         <div className="flex min-h-screen flex-col">
             <Navbar />
@@ -29,12 +29,12 @@ export default function Home() {
                     {/* Content */}
                     <div className="container relative z-10 mx-auto px-4 md:px-6 flex flex-col justify-center h-full pt-20 pb-16">
                         <div className="max-w-3xl">
-                            <div className="flex items-center mb-4">
+                            {/* <div className="flex items-center mb-4">
                                 <div className="h-1 w-6 bg-amber-500 mr-3"></div>
                                 <span className="text-amber-500 uppercase text-sm tracking-wider">
                                     Premium
                                 </span>
-                            </div>
+                            </div> */}
 
                             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
                                 Rental Car
@@ -57,16 +57,16 @@ export default function Home() {
                             </div>
 
                             <div className="flex flex-wrap gap-4">
-                                <Link href="/details">
+                                <Link href="/cars">
                                     <Button
                                         size="lg"
                                         variant="outline"
                                         className="bg-transparent text-white border-white hover:bg-white hover:text-zinc-900"
                                     >
-                                        View Details
+                                        View Cars
                                     </Button>
                                 </Link>
-                                <Link href="/rent">
+                                <Link href="/cars">
                                     <Button
                                         size="lg"
                                         className="bg-amber-500 text-zinc-900 hover:bg-amber-600"
@@ -80,19 +80,19 @@ export default function Home() {
                 </section>
 
                 {/* Car Carousel Section */}
-                <CarCarousel />
+                {/* <CarCarousel /> */}
 
                 {/* Car Types Section */}
-                <CarTypes />
+                {/* <CarTypes /> */}
 
                 {/* Testimonials Section */}
-                <Testimonials />
+                {/* <Testimonials /> */}
 
                 {/* CTA Section */}
-                <CTASection />
+                {/* <CTASection /> */}
 
                 {/* Booking Form Section */}
-                <BookingForm />
+                {/* <BookingForm /> */}
 
                 {/* Contact Section */}
                 <ContactSection />
