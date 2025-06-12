@@ -1,12 +1,13 @@
 <?php
+
+use App\Http\Controllers\AdminDashboardController; // Ensure this controller exists in the specified namespace
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\AdminBookingController;
 
+
 Route::middleware(['auth', "role:admin"])->prefix('admin')->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Admin/AdminDashboard');
-    })->name('admin.dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     // Route::redirect("/admin", "/admin/dashboard");
     Route::get('/users', function () {
         return Inertia::render('Admin/Users');

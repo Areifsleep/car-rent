@@ -1,326 +1,302 @@
-import { Link } from "@inertiajs/react";
+import React from "react";
+import AdminLayout from "@/Layouts/AdminLayout";
+import { Head } from "@inertiajs/react";
 import {
     Car,
     Calendar,
     CreditCard,
     Users,
     TrendingUp,
-    DollarSign,
-    AlertCircle,
-    CheckCircle,
+    TrendingDown,
+    Activity,
 } from "lucide-react";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/Components/ui/card";
-import AdminLayout from "@/Layouts/AdminLayout";
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    BarChart,
+    Bar,
+} from "recharts";
 
-export default function AdminDashboard() {
+interface Stats {
+    totalCars: number;
+    availableCars: number;
+    totalBookings: number;
+    todayBookings: number;
+    totalRevenue: number;
+    monthlyRevenue: number;
+    totalUsers: number;
+    pendingPayments: number;
+}
+
+interface Booking {
+    id: number;
+    user_name: string;
+    car_name: string;
+    status: string;
+    total_amount: number;
+    created_at: string;
+}
+
+interface WeeklyData {
+    week: string;
+    bookings: number;
+    revenue: number;
+}
+
+interface AdminDashboardProps {
+    stats: Stats;
+    recentBookings: Booking[];
+    weeklyData: WeeklyData[];
+}
+
+export default function AdminDashboard({
+    stats,
+    recentBookings,
+    weeklyData,
+}: AdminDashboardProps) {
+    const formatRupiah = (amount: number) => {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+        }).format(amount);
+    };
+
+    const statCards = [
+        {
+            title: "Total Mobil",
+            value: stats.totalCars,
+            subtitle: `${stats.availableCars} tersedia`,
+
+            color: "from-blue-500 to-blue-600",
+        },
+        {
+            title: "Total Booking",
+            value: stats.totalBookings,
+            subtitle: `${stats.todayBookings} hari ini`,
+
+            color: "from-emerald-500 to-emerald-600",
+        },
+        {
+            title: "Total Revenue",
+            value: formatRupiah(stats.totalRevenue),
+            subtitle: `${formatRupiah(stats.monthlyRevenue)} bulan ini`,
+
+            color: "from-amber-500 to-amber-600",
+        },
+        {
+            title: "Total Users",
+            value: stats.totalUsers,
+            subtitle: `${stats.pendingPayments} pending payment`,
+
+            color: "from-purple-500 to-purple-600",
+        },
+    ];
+
     return (
         <AdminLayout>
-            <div>
-                <h1 className="mb-6 text-2xl font-bold">Dashboard Admin</h1>
+            <Head title="Admin Dashboard" />
+
+            <div className="space-y-6">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-white">
+                            Dashboard Admin
+                        </h1>
+                        <p className="text-zinc-400 mt-1">
+                            Selamat datang kembali! Berikut ringkasan aktivitas
+                            sistem.
+                        </p>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm text-zinc-400">
+                        <Activity className="h-4 w-4" />
+                        <span>
+                            Last updated:{" "}
+                            {new Date().toLocaleTimeString("id-ID")}
+                        </span>
+                    </div>
+                </div>
 
                 {/* Stats Cards */}
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    <Card className="bg-zinc-800 border-zinc-700 text-white">
-                        <CardContent className="flex flex-row items-center p-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-900">
-                                <Car className="h-6 w-6 text-blue-400" />
-                            </div>
-                            <div className="ml-4">
-                                <p className="text-sm font-medium text-zinc-400">
-                                    Total Mobil
-                                </p>
-                                <h3 className="text-2xl font-bold text-white">
-                                    24
-                                </h3>
-                            </div>
-                        </CardContent>
-                    </Card>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {statCards.map((card, index) => (
+                        <div
+                            key={index}
+                            className="relative overflow-hidden rounded-xl bg-zinc-800 border border-zinc-700 p-6 transition-all hover:bg-zinc-750 hover:border-zinc-600"
+                        >
+                            {/* Background Gradient */}
+                            <div
+                                className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${card.color} opacity-10 rounded-full -mr-10 -mt-10`}
+                            ></div>
 
-                    <Card className="bg-zinc-800 border-zinc-700 text-white">
-                        <CardContent className="flex flex-row items-center p-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-900">
-                                <Calendar className="h-6 w-6 text-green-400" />
+                            <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                    <p className="text-zinc-400 text-sm font-medium">
+                                        {card.title}
+                                    </p>
+                                    <p className="text-2xl font-bold text-white mt-1">
+                                        {card.value}
+                                    </p>
+                                    <p className="text-zinc-500 text-xs mt-1">
+                                        {card.subtitle}
+                                    </p>
+                                </div>
                             </div>
-                            <div className="ml-4">
-                                <p className="text-sm font-medium text-zinc-400">
-                                    Booking Aktif
-                                </p>
-                                <h3 className="text-2xl font-bold text-white">
-                                    18
-                                </h3>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="bg-zinc-800 border-zinc-700 text-white">
-                        <CardContent className="flex flex-row items-center p-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-900">
-                                <DollarSign className="h-6 w-6 text-amber-400" />
-                            </div>
-                            <div className="ml-4">
-                                <p className="text-sm font-medium text-zinc-400">
-                                    Pendapatan
-                                </p>
-                                <h3 className="text-2xl font-bold text-white">
-                                    $12,450
-                                </h3>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="bg-zinc-800 border-zinc-700 text-white">
-                        <CardContent className="flex flex-row items-center p-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-900">
-                                <Users className="h-6 w-6 text-purple-400" />
-                            </div>
-                            <div className="ml-4">
-                                <p className="text-sm font-medium text-zinc-400">
-                                    Total User
-                                </p>
-                                <h3 className="text-2xl font-bold text-white">
-                                    156
-                                </h3>
-                            </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    ))}
                 </div>
 
-                {/* Quick Access */}
-                <h2 className="mb-4 mt-8 text-xl font-bold">Akses Cepat</h2>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    <Link href="/admin/cars">
-                        <Card className="cursor-pointer transition-all hover:bg-zinc-700 bg-zinc-800 border-zinc-700 text-white">
-                            <CardContent className="flex flex-col items-center p-6">
-                                <Car className="mb-4 h-8 w-8 text-amber-500" />
-                                <h3 className="text-center text-lg font-medium">
-                                    Manajemen Mobil
-                                </h3>
-                            </CardContent>
-                        </Card>
-                    </Link>
+                {/* Main Content Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Weekly Chart - 2/3 width */}
+                    <div className="lg:col-span-2">
+                        <div className="rounded-xl bg-zinc-800 border border-zinc-700 p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 className="text-xl font-semibold text-white">
+                                        Laporan Mingguan
+                                    </h3>
+                                    <p className="text-zinc-400 text-sm">
+                                        Booking dan revenue 4 minggu terakhir
+                                    </p>
+                                </div>
+                                <div className="flex items-center space-x-4 text-sm">
+                                    <div className="flex items-center">
+                                        <div className="w-3 h-3 bg-amber-500 rounded-full mr-2"></div>
+                                        <span className="text-zinc-400">
+                                            Bookings
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <div className="w-3 h-3 bg-emerald-500 rounded-full mr-2"></div>
+                                        <span className="text-zinc-400">
+                                            Revenue
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <Link href="/admin/bookings">
-                        <Card className="cursor-pointer transition-all hover:bg-zinc-700 bg-zinc-800 border-zinc-700 text-white">
-                            <CardContent className="flex flex-col items-center p-6">
-                                <Calendar className="mb-4 h-8 w-8 text-amber-500" />
-                                <h3 className="text-center text-lg font-medium">
-                                    Manajemen Booking
-                                </h3>
-                            </CardContent>
-                        </Card>
-                    </Link>
+                            <div className="h-80">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={weeklyData}>
+                                        <CartesianGrid
+                                            strokeDasharray="3 3"
+                                            stroke="#374151"
+                                        />
+                                        <XAxis
+                                            dataKey="week"
+                                            stroke="#9CA3AF"
+                                            fontSize={12}
+                                        />
+                                        <YAxis stroke="#9CA3AF" fontSize={12} />
+                                        <Tooltip
+                                            contentStyle={{
+                                                backgroundColor: "#1F2937",
+                                                border: "1px solid #374151",
+                                                borderRadius: "8px",
+                                                color: "#F9FAFB",
+                                            }}
+                                            formatter={(value, name) => [
+                                                name === "revenue"
+                                                    ? formatRupiah(
+                                                          Number(value)
+                                                      )
+                                                    : value,
+                                                name === "revenue"
+                                                    ? "Revenue"
+                                                    : "Bookings",
+                                            ]}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="bookings"
+                                            stroke="#F59E0B"
+                                            strokeWidth={3}
+                                            dot={{
+                                                fill: "#F59E0B",
+                                                strokeWidth: 2,
+                                                r: 4,
+                                            }}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="revenue"
+                                            stroke="#10B981"
+                                            strokeWidth={3}
+                                            dot={{
+                                                fill: "#10B981",
+                                                strokeWidth: 2,
+                                                r: 4,
+                                            }}
+                                        />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                    </div>
 
-                    <Link href="/admin/payments">
-                        <Card className="cursor-pointer transition-all hover:bg-zinc-700 bg-zinc-800 border-zinc-700 text-white">
-                            <CardContent className="flex flex-col items-center p-6">
-                                <CreditCard className="mb-4 h-8 w-8 text-amber-500" />
-                                <h3 className="text-center text-lg font-medium">
-                                    Manajemen Pembayaran
+                    {/* Recent Activity - 1/3 width */}
+                    <div className="lg:col-span-1">
+                        <div className="rounded-xl bg-zinc-800 border border-zinc-700 p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-xl font-semibold text-white">
+                                    Aktivitas Terbaru
                                 </h3>
-                            </CardContent>
-                        </Card>
-                    </Link>
+                            </div>
 
-                    <Link href="/admin/users">
-                        <Card className="cursor-pointer transition-all hover:bg-zinc-700 bg-zinc-800 border-zinc-700 text-white">
-                            <CardContent className="flex flex-col items-center p-6">
-                                <Users className="mb-4 h-8 w-8 text-amber-500" />
-                                <h3 className="text-center text-lg font-medium">
-                                    Manajemen User
-                                </h3>
-                            </CardContent>
-                        </Card>
-                    </Link>
-                </div>
-
-                {/* Recent Activity and Alerts */}
-                <div className="mt-8 grid gap-6 lg:grid-cols-2">
-                    {/* Recent Bookings */}
-                    <Card className="bg-zinc-800 border-zinc-700 text-white">
-                        <CardHeader>
-                            <CardTitle>Booking Terbaru</CardTitle>
-                            <CardDescription className="text-zinc-400">
-                                Daftar booking yang baru masuk
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
                             <div className="space-y-4">
-                                {[
-                                    {
-                                        id: "B-1234",
-                                        customer: "John Doe",
-                                        car: "Lamborghini Urus",
-                                        date: "12 May 2025",
-                                        status: "Pending",
-                                    },
-                                    {
-                                        id: "B-1233",
-                                        customer: "Jane Smith",
-                                        car: "Aston Martin DBX",
-                                        date: "11 May 2025",
-                                        status: "Confirmed",
-                                    },
-                                    {
-                                        id: "B-1232",
-                                        customer: "Robert Johnson",
-                                        car: "Ferrari Purosangue",
-                                        date: "10 May 2025",
-                                        status: "Completed",
-                                    },
-                                    {
-                                        id: "B-1231",
-                                        customer: "Emily Davis",
-                                        car: "Bentley Bentayga",
-                                        date: "9 May 2025",
-                                        status: "Cancelled",
-                                    },
-                                ].map((booking) => (
+                                {recentBookings.map((booking) => (
                                     <div
                                         key={booking.id}
-                                        className="flex items-center justify-between rounded-md border border-zinc-700 p-3 bg-zinc-800"
+                                        className="flex items-center justify-between p-4 rounded-lg bg-zinc-900 border border-zinc-700 hover:border-zinc-600 transition-colors"
                                     >
-                                        <div>
-                                            <p className="font-medium">
-                                                {booking.customer}
-                                            </p>
-                                            <p className="text-sm text-zinc-500">
-                                                {booking.car} • {booking.date}
-                                            </p>
-                                        </div>
-                                        <div className="flex items-center">
-                                            <span
-                                                className={cn(
-                                                    "inline-block rounded-full px-2 py-1 text-xs font-medium",
+                                        <div className="flex items-center space-x-3">
+                                            <div
+                                                className={`w-3 h-3 rounded-full ${
                                                     booking.status ===
-                                                        "Pending" &&
-                                                        "bg-yellow-100 text-yellow-800",
-                                                    booking.status ===
-                                                        "Confirmed" &&
-                                                        "bg-blue-100 text-blue-800",
-                                                    booking.status ===
-                                                        "Completed" &&
-                                                        "bg-green-100 text-green-800",
-                                                    booking.status ===
-                                                        "Cancelled" &&
-                                                        "bg-red-100 text-red-800"
-                                                )}
-                                            >
-                                                {booking.status}
-                                            </span>
+                                                    "confirmed"
+                                                        ? "bg-emerald-500"
+                                                        : booking.status ===
+                                                          "pending"
+                                                        ? "bg-amber-500"
+                                                        : "bg-red-500"
+                                                }`}
+                                            ></div>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-medium text-white truncate">
+                                                    {booking.car_name}
+                                                </p>
+                                                <p className="text-sm text-zinc-400 truncate">
+                                                    by {booking.user_name}
+                                                </p>
+                                                <p className="text-xs text-zinc-500">
+                                                    {new Date(
+                                                        booking.created_at
+                                                    ).toLocaleDateString(
+                                                        "id-ID"
+                                                    )}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                            <div className="mt-4 text-center">
-                                <Link
-                                    href="/admin/bookings"
-                                    className="text-sm font-medium text-amber-500 hover:underline"
-                                >
-                                    Lihat Semua Booking
-                                </Link>
-                            </div>
-                        </CardContent>
-                    </Card>
 
-                    {/* System Alerts */}
-                    <Card className="bg-zinc-800 border-zinc-700 text-white">
-                        <CardHeader>
-                            <CardTitle>Notifikasi Sistem</CardTitle>
-                            <CardDescription className="text-zinc-400">
-                                Peringatan dan notifikasi penting
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                <div className="flex items-start rounded-md border border-red-200 bg-red-50 p-3">
-                                    <AlertCircle className="mr-3 h-5 w-5 text-red-500" />
-                                    <div>
-                                        <p className="font-medium text-red-800">
-                                            Pembayaran Gagal
-                                        </p>
-                                        <p className="text-sm text-red-700">
-                                            Pembayaran untuk booking #B-1230
-                                            gagal diproses. Diperlukan
-                                            verifikasi manual.
-                                        </p>
-                                        <p className="mt-1 text-xs text-red-600">
-                                            2 jam yang lalu
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-start rounded-md border border-yellow-200 bg-yellow-50 p-3">
-                                    <AlertCircle className="mr-3 h-5 w-5 text-yellow-500" />
-                                    <div>
-                                        <p className="font-medium text-yellow-800">
-                                            Stok Mobil Menipis
-                                        </p>
-                                        <p className="text-sm text-yellow-700">
-                                            Beberapa mobil sudah hampir terpesan
-                                            penuh untuk minggu depan.
-                                        </p>
-                                        <p className="mt-1 text-xs text-yellow-600">
-                                            5 jam yang lalu
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-start rounded-md border border-green-200 bg-green-50 p-3">
-                                    <CheckCircle className="mr-3 h-5 w-5 text-green-500" />
-                                    <div>
-                                        <p className="font-medium text-green-800">
-                                            Mobil Baru Ditambahkan
-                                        </p>
-                                        <p className="text-sm text-green-700">
-                                            Porsche Cayenne Turbo GT berhasil
-                                            ditambahkan ke inventaris.
-                                        </p>
-                                        <p className="mt-1 text-xs text-green-600">
-                                            1 hari yang lalu
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="mt-4 text-center">
-                                <Link
-                                    href="#"
-                                    className="text-sm font-medium text-amber-500 hover:underline"
-                                >
-                                    Lihat Semua Notifikasi
-                                </Link>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* Revenue Chart */}
-                <Card className="mt-8 bg-zinc-800 border-zinc-700 text-white">
-                    <CardHeader>
-                        <CardTitle>Grafik Pendapatan</CardTitle>
-                        <CardDescription className="text-zinc-400">
-                            Pendapatan 30 hari terakhir
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="h-80 w-full rounded-md border border-zinc-700 bg-zinc-900 p-4 flex items-center justify-center">
-                            <div className="flex flex-col items-center text-zinc-500">
-                                <TrendingUp className="h-12 w-12 mb-2" />
-                                <p>Chart akan ditampilkan di sini</p>
+                            <div className="mt-2 ">
+                                <button className="w-full text-center text-amber-500 hover:text-amber-400 text-sm font-medium transition-colors">
+                                    Lihat Semua Booking →
+                                </button>
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             </div>
         </AdminLayout>
     );
-}
-
-function cn(...classes: (string | boolean | undefined)[]) {
-    return classes.filter(Boolean).join(" ");
 }
