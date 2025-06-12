@@ -222,7 +222,7 @@ export default function Navbar() {
                             /* Main Menu (Mobile and Desktop) */
                             <ul
                                 className={cn(
-                                    "flex flex-col md:flex-row md:items-center md:gap-1 lg:gap-6",
+                                    "flex flex-col md:flex-row md:items-center justify-start md:gap-1 lg:gap-14",
                                     isMobile
                                         ? "h-full py-20 px-4"
                                         : "p-4 md:p-0"
@@ -231,24 +231,7 @@ export default function Navbar() {
                                 <NavItem href="/" active={url === "home"}>
                                     Home
                                 </NavItem>
-                                {/* <NavItem
-                                    href="/about"
-                                    active={url?.startsWith("about") ?? false}
-                                >
-                                    About
-                                </NavItem> */}
-                                {/* <NavItem
-                                    href="/services"
-                                    active={
-                                        url?.startsWith("services") ?? false
-                                    }
-                                    hasDropdown
-                                    onClick={() =>
-                                        openSubmenu("services") ?? false
-                                    }
-                                >
-                                    Services
-                                </NavItem> */}
+
                                 <NavItem
                                     href="/cars"
                                     active={url?.startsWith("cars") ?? false}
@@ -260,28 +243,9 @@ export default function Navbar() {
                                 <NavItem
                                     href="/bookings"
                                     active={url?.startsWith("booking") ?? false}
-                                    // hasDropdown
-                                    // onClick={() => openSubmenu("blog")}
                                 >
                                     Bookings
                                 </NavItem>
-                                {/* <NavItem
-                                    href="/contact"
-                                    active={url?.startsWith("contact") ?? false}
-                                >
-                                    Contact
-                                </NavItem> */}
-                                {/* {isMobile && (
-                                    <li className="mt-auto pb-6">
-                                        <Link
-                                            href="/cart"
-                                            className="flex items-center text-white hover:text-amber-500"
-                                        >
-                                            <ShoppingCart className="h-5 w-5 mr-3" />
-                                            <span>Cart</span>
-                                        </Link>
-                                    </li>
-                                )} */}
                             </ul>
                         )}
                     </nav>
@@ -406,7 +370,7 @@ export default function Navbar() {
                                     Need help?
                                 </span>
                                 <span className="text-sm font-medium text-white">
-                                    855 100 4444
+                                    +6289 3939 3939
                                 </span>
                             </div>
                         </div>

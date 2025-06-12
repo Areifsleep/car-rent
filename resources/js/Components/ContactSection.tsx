@@ -31,7 +31,7 @@ export default function ContactSection() {
                             <h3 className="text-white font-medium mb-1">
                                 Call us
                             </h3>
-                            <p className="text-zinc-300">+971 52-333-4444</p>
+                            <p className="text-zinc-300">+6289 3939 3939</p>
                         </div>
                     </div>
 
@@ -43,7 +43,9 @@ export default function ContactSection() {
                             <h3 className="text-white font-medium mb-1">
                                 Write to us
                             </h3>
-                            <p className="text-zinc-300">info@renax.com</p>
+                            <p className="text-zinc-300">
+                                info@makangratis.com
+                            </p>
                         </div>
                     </div>
 
@@ -56,7 +58,7 @@ export default function ContactSection() {
                                 Address
                             </h3>
                             <p className="text-zinc-300">
-                                Dubai, Water Tower, Office 123
+                                Kidul Sawah, Pluto, Milky Way
                             </p>
                         </div>
                     </div>
@@ -151,7 +153,7 @@ export default function ContactSection() {
 
                 {/* Footer */}
                 <div className="mt-16 pt-8 border-t border-zinc-800 text-center text-zinc-500">
-                    <p>© 2025 webRedox. All rights reserved.</p>
+                    <p>© 2025 REN7AL. All rights reserved.</p>
                 </div>
             </div>
         </section>

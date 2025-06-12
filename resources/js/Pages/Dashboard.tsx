@@ -43,11 +43,11 @@ export default function Welcome() {
                             <div className="flex flex-col sm:flex-row items-start gap-4 mb-8">
                                 <div>
                                     <h2 className="text-xl md:text-2xl text-white mb-2">
-                                        Rolls Royce Cullinan
+                                        Honda Mobilio
                                     </h2>
                                     <div className="flex items-center">
                                         <span className="text-3xl md:text-4xl font-bold text-amber-500">
-                                            $900
+                                            IDR 420.000
                                         </span>
                                         <span className="text-white text-sm ml-2">
                                             / DAY
