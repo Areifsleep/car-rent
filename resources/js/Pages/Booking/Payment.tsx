@@ -77,29 +77,37 @@ export default function PaymentPage({ booking }: PaymentPageProps) {
                 {/* Progress Steps */}
                 <div className="mb-8">
                     <div className="flex items-center justify-center space-x-4 text-sm">
-                        <div className="flex items-center space-x-2">
+                        <div className="flex flex-col items-center space-y-2">
                             <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
                                 ✓
                             </div>
-                            <span className="text-green-400 font-medium">
-                                Booking Details
+                            <span className="text-green-400 font-medium text-xs sm:text-sm">
+                                <span className="hidden sm:inline">
+                                    Booking Details
+                                </span>
+                                <span className="sm:hidden">Details</span>
                             </span>
                         </div>
-                        <div className="w-12 h-px bg-amber-500"></div>
-                        <div className="flex items-center space-x-2">
+                        <div className="w-8 sm:w-12 h-px bg-amber-500 mt-[-10px]"></div>
+                        <div className="flex flex-col items-center space-y-2">
                             <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold">
                                 2
                             </div>
-                            <span className="text-amber-400 font-medium">
+                            <span className="text-amber-400 font-medium text-xs sm:text-sm">
                                 Payment
                             </span>
                         </div>
-                        <div className="w-12 h-px bg-zinc-600"></div>
-                        <div className="flex items-center space-x-2">
+                        <div className="w-8 sm:w-12 h-px bg-zinc-600 mt-[-10px]"></div>
+                        <div className="flex flex-col items-center space-y-2">
                             <div className="w-8 h-8 bg-zinc-600 rounded-full flex items-center justify-center text-white font-bold">
                                 3
                             </div>
-                            <span className="text-zinc-400">Confirmation</span>
+                            <span className="text-zinc-400 text-xs sm:text-sm">
+                                <span className="hidden sm:inline">
+                                    Confirmation
+                                </span>
+                                <span className="sm:hidden">Confirm</span>
+                            </span>
                         </div>
                     </div>
                 </div>

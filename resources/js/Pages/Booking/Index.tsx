@@ -92,7 +92,7 @@ export default function BookingIndex({ bookings }: BookingIndexProps) {
 
         return (
             <Badge
-                className={`${config.bg} ${config.text} border-none flex items-center space-x-1`}
+                className={`${config.bg} ${config.text} border-none flex items-center space-x-1 min-w-[160px] justify-center`}
             >
                 <Icon className="h-3 w-3" />
                 <span>{config.label}</span>
@@ -183,8 +183,8 @@ export default function BookingIndex({ bookings }: BookingIndexProps) {
 
             <div className="container mx-auto px-4 py-8 max-w-6xl">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center space-x-4">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8 space-y-4 lg:space-y-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
                         <Link href={route("home")}>
                             <Button
                                 variant="outline"
@@ -194,12 +194,12 @@ export default function BookingIndex({ bookings }: BookingIndexProps) {
                                 Back to Home
                             </Button>
                         </Link>
-                        <h1 className="text-3xl font-bold text-white">
+                        <h1 className="text-3xl font-bold text-white text-center sm:text-left">
                             My Bookings
                         </h1>
                     </div>
 
-                    <div className="text-zinc-400">
+                    <div className="text-zinc-400 text-center lg:text-right">
                         Total: {bookings.total} bookings
                     </div>
                 </div>
@@ -436,9 +436,10 @@ export default function BookingIndex({ bookings }: BookingIndexProps) {
                                         </div>
 
                                         {/* Actions - Grid Layout */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-zinc-700 lg:border-t-0 lg:pt-0 lg:w-48 lg:flex lg:flex-col">
-                                            {/* Left Side - Cancel (if pending) */}
-                                            <div className="flex justify-start lg:justify-center">
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4 border-t border-zinc-700 lg:border-t-0 lg:pt-0 lg:w-48 lg:flex lg:flex-col lg:ml-4">
+                                            {/* Mobile: Cancel and View Details in one row with equal width */}
+                                            <div className="flex gap-3 col-span-2 sm:hidden">
+                                                {/* Cancel Button (if pending) */}
                                                 {(booking.status ===
                                                     "pending" ||
                                                     booking.status ===
@@ -455,7 +456,7 @@ export default function BookingIndex({ bookings }: BookingIndexProps) {
                                                             processing ===
                                                             booking.id
                                                         }
-                                                        className="w-full sm:w-auto bg-transparent border-red-600 text-red-400 hover:bg-red-600 hover:text-white disabled:opacity-50"
+                                                        className="flex-1 bg-transparent border-red-600 text-red-400 hover:bg-red-600 hover:text-white disabled:opacity-50"
                                                     >
                                                         {processing ===
                                                         booking.id ? (
@@ -471,20 +472,19 @@ export default function BookingIndex({ bookings }: BookingIndexProps) {
                                                         )}
                                                     </Button>
                                                 )}
-                                            </div>
 
-                                            {/* Center - View Details */}
-                                            <div className="flex justify-center">
+                                                {/* View Details Button */}
                                                 <Link
                                                     href={route(
                                                         "bookings.show",
                                                         booking.id
                                                     )}
+                                                    className="flex-1"
                                                 >
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
-                                                        className="w-full sm:w-auto bg-transparent border-zinc-600 text-white hover:bg-zinc-700 font-medium"
+                                                        className="w-full bg-transparent border-zinc-600 text-white hover:bg-zinc-700 font-medium"
                                                     >
                                                         <Eye className="h-4 w-4 mr-2" />
                                                         View Details
@@ -492,8 +492,8 @@ export default function BookingIndex({ bookings }: BookingIndexProps) {
                                                 </Link>
                                             </div>
 
-                                            {/* Right Side - Continue Payment (if pending) */}
-                                            <div className="flex justify-end lg:justify-center">
+                                            {/* Continue Payment (Mobile - Full width) */}
+                                            <div className="col-span-2 sm:hidden">
                                                 {booking.status === "pending" &&
                                                     booking.payment
                                                         ?.payment_status ===
@@ -505,12 +505,90 @@ export default function BookingIndex({ bookings }: BookingIndexProps) {
                                                                 )
                                                             }
                                                             size="sm"
-                                                            className="w-full sm:w-auto bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white"
+                                                            className="w-full bg-gradient-to-r from-amber-600 to-amber-600 hover:from-amber-700 hover:to-amber-700 text-white"
                                                         >
-                                                            <CreditCard className="h-4 w-4 mr-2" />
                                                             Continue Payment
                                                         </Button>
                                                     )}
+                                            </div>
+
+                                            {/* Desktop/Tablet Layout - Hidden on mobile */}
+                                            <div className="hidden sm:flex sm:col-span-3 lg:flex-col lg:gap-3">
+                                                {/* Left Side - Cancel (if pending) */}
+                                                <div className="flex justify-start lg:justify-center">
+                                                    {(booking.status ===
+                                                        "pending" ||
+                                                        booking.status ===
+                                                            "confirmed") && (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() =>
+                                                                handleCancelBooking(
+                                                                    booking.id
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                processing ===
+                                                                booking.id
+                                                            }
+                                                            className="w-full sm:w-auto lg:min-w-[140px] bg-transparent border-red-600 text-red-400 hover:bg-red-600 hover:text-white disabled:opacity-50"
+                                                        >
+                                                            {processing ===
+                                                            booking.id ? (
+                                                                <>
+                                                                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent mr-2"></div>
+                                                                    Cancelling...
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <X className="h-4 w-4 mr-2" />
+                                                                    Cancel
+                                                                </>
+                                                            )}
+                                                        </Button>
+                                                    )}
+                                                </div>
+
+                                                {/* Center - View Details */}
+                                                <div className="flex justify-center">
+                                                    <Link
+                                                        href={route(
+                                                            "bookings.show",
+                                                            booking.id
+                                                        )}
+                                                    >
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="w-full sm:w-auto lg:min-w-[140px] bg-transparent border-zinc-600 text-white hover:bg-zinc-700 font-medium"
+                                                        >
+                                                            <Eye className="h-4 w-4 mr-2" />
+                                                            View Details
+                                                        </Button>
+                                                    </Link>
+                                                </div>
+
+                                                {/* Right Side - Continue Payment (if pending) */}
+                                                <div className="flex justify-end lg:justify-center">
+                                                    {booking.status ===
+                                                        "pending" &&
+                                                        booking.payment
+                                                            ?.payment_status ===
+                                                            "pending" && (
+                                                            <Button
+                                                                onClick={() =>
+                                                                    handleContinuePayment(
+                                                                        booking.id
+                                                                    )
+                                                                }
+                                                                size="sm"
+                                                                className="w-full sm:w-auto lg:min-w-[140px] bg-gradient-to-r from-amber-600 to-amber-600 hover:from-amber-700 hover:to-amber-700 text-white"
+                                                            >
+                                                                Continue Payment
+                                                            </Button>
+                                                        )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

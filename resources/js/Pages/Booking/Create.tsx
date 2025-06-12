@@ -553,25 +553,29 @@ export default function BookingCreate({
                 {/* Payment Flow Info */}
                 <div className="mt-8 text-center">
                     <div className="inline-flex items-center space-x-4 text-zinc-400 text-sm">
-                        <div className="flex items-center space-x-2">
+                        <div className="flex flex-col items-center space-y-1 sm:flex-row sm:space-y-0 sm:space-x-1">
                             <div className="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
                                 1
                             </div>
-                            <span>Select Dates</span>
+                            <span className="text-xs sm:text-sm">
+                                Select Dates
+                            </span>
                         </div>
-                        <div className="w-8 h-px bg-zinc-600"></div>
-                        <div className="flex items-center space-x-2">
+                        <div className="w-6 h-px bg-zinc-600"></div>
+                        <div className="flex flex-col items-center space-y-1 sm:flex-row sm:space-y-0 sm:space-x-1">
                             <div className="w-6 h-6 bg-zinc-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
                                 2
                             </div>
-                            <span>Payment</span>
+                            <span className="text-xs sm:text-sm">Payment</span>
                         </div>
-                        <div className="w-8 h-px bg-zinc-600"></div>
-                        <div className="flex items-center space-x-2">
+                        <div className="w-6 h-px bg-zinc-600"></div>
+                        <div className="flex flex-col items-center space-y-1 sm:flex-row sm:space-y-0 sm:space-x-1">
                             <div className="w-6 h-6 bg-zinc-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
                                 3
                             </div>
-                            <span>Confirmation</span>
+                            <span className="text-xs sm:text-sm">
+                                Confirmation
+                            </span>
                         </div>
                     </div>
                 </div>
