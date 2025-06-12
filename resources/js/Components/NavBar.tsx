@@ -328,24 +328,18 @@ export default function Navbar() {
                                         My Account
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem>
-                                        <Link
-                                            href={route("logout")}
-                                            className="w-full cursor-pointer flex items-center"
-                                        >
-                                            <User className="mr-2 h-4 w-4" />
-                                            <span>Profile</span>
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                        <Link
-                                            href={route("logout")}
-                                            className="w-full cursor-pointer flex items-center"
-                                        >
-                                            <Settings className="mr-2 h-4 w-4" />
-                                            <span>Settings</span>
-                                        </Link>
-                                    </DropdownMenuItem>
+                                    {auth.user.roles.includes("admin") && (
+                                        <DropdownMenuItem>
+                                            <Link
+                                                href={route("admin.dashboard")}
+                                                className="w-full cursor-pointer flex items-center"
+                                            >
+                                                <User className="mr-2 h-4 w-4" />
+                                                <span>Admin Dashboard</span>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    )}
+
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem>
                                         <Link

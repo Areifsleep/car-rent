@@ -21,6 +21,7 @@ import { Search, Pencil, Trash2, Users } from "lucide-react";
 import { Car } from "@/types/car";
 import SearchBox from "@/Components/Admin/SearchBox";
 import Pagination from "@/Components/Admin/Pagination";
+import { formatCurrency } from "@/lib/utils";
 
 interface CarTableProps {
     cars: {
@@ -43,13 +44,6 @@ interface CarTableProps {
     };
     onDeleteClick: (car: Car) => void;
 }
-
-// function getSeatCategory(seats: number): string {
-//     if (seats <= 2) return "Compact";
-//     if (seats <= 5) return "Standard";
-//     if (seats <= 7) return "Family";
-//     return "Large";
-// }
 
 export default function CarTable({
     cars,
@@ -157,12 +151,14 @@ export default function CarTable({
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-amber-500 font-medium">
-                                        ${car.rental_price_per_day}
+                                        {formatCurrency(
+                                            Number(car.rental_price_per_day)
+                                        )}
                                     </TableCell>
                                     <TableCell>
-                                        <div className="flex items-center">
+                                        <div className="flex  items-center">
                                             <span
-                                                className={`inline-flex items-center rounded-xl px-2 py-0.5 text-xs font-medium ${
+                                                className={`inline-flex items-center justify-center rounded-xl px-2 py-0.5 text-xs font-medium ${
                                                     car.is_available
                                                         ? "bg-green-100 text-green-800 border border-green-300"
                                                         : "bg-red-100 text-red-800 border border-red-300"

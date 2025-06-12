@@ -5,6 +5,8 @@ export interface User {
     name: string;
     email: string;
     email_verified_at?: string;
+    roles: string[]; // Array of role names
+    permissions: string[]; // Array of permission names
 }
 
 export type PaginatedData<T = any> = {

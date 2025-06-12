@@ -167,9 +167,6 @@ export default function AdminBookingsPage({
             <div>
                 <div className="mb-6 flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Manajemen Booking</h1>
-                    <Button variant="default">
-                        <Calendar className="mr-2 h-4 w-4" /> Lihat Kalender
-                    </Button>
                 </div>
 
                 {/* Filters */}
@@ -207,9 +204,6 @@ export default function AdminBookingsPage({
                                 </SelectItem>
                             </SelectContent>
                         </Select>
-                        <Button onClick={handleSearch} variant="default">
-                            <Search className="h-4 w-4" />
-                        </Button>
                     </div>
                 </div>
 
@@ -405,7 +399,7 @@ function StatusBadge({ status }: { status: Booking["status"] }) {
 
     return (
         <span
-            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${config.bgColor} ${config.textColor} ${config.borderColor}`}
+            className={`inline-flex justify-center items-center px-3 py-1 rounded-full text-xs font-medium border w-24 ${config.bgColor} ${config.textColor} ${config.borderColor}`}
         >
             {config.label}
         </span>
