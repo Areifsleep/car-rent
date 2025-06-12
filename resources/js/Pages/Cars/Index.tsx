@@ -113,10 +113,6 @@ export default function Index({ cars, filters }: IndexProps) {
                         <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-amber-100 bg-clip-text text-transparent">
                             Find Your Perfect Ride
                         </h1>
-                        <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-2xl mx-auto">
-                            Discover premium cars for every journey. From luxury
-                            sedans to adventure SUVs.
-                        </p>
 
                         {/* Simple Search Bar */}
                         <div className="max-w-2xl mx-auto mb-8">
@@ -143,14 +139,6 @@ export default function Index({ cars, filters }: IndexProps) {
                                     </button>
                                 )}
                             </div>
-
-                            {/* Search hint */}
-                            {/* <div className="mt-3 text-center">
-                                    <p className="text-white/60 text-sm">
-                                        Start typing to search instantly •{" "}
-                                        {cars.total} cars available
-                                    </p>
-                                </div> */}
                         </div>
 
                         {/* Quick Stats */}
@@ -159,10 +147,7 @@ export default function Index({ cars, filters }: IndexProps) {
                                 <Star className="h-4 w-4 text-yellow-400" />
                                 <span>Premium Quality</span>
                             </div>
-                            <div className="flex items-center gap-2 text-white/80">
-                                <MapPin className="h-4 w-4 text-green-400" />
-                                <span>Multiple Locations</span>
-                            </div>
+
                             <div className="flex items-center gap-2 text-white/80">
                                 <Calendar className="h-4 w-4 text-amber-400" />
                                 <span>Flexible Booking</span>
